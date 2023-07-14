@@ -26,4 +26,14 @@ class BraintreeDropIn {
     if (result == null) return null;
     return BraintreeDropInResult.fromJson(result);
   }
+
+  static Future<BraintreeDropInResult?> startApplePay(
+      BraintreeDropInRequest request) async {
+    var result = await _kChannel.invokeMethod(
+      'startApplePay',
+      request.toJson(),
+    );
+    if (result == null) return null;
+    return BraintreeDropInResult.fromJson(result);
+  }
 }

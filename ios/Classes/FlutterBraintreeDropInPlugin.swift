@@ -156,6 +156,40 @@ public class FlutterBraintreeDropInPlugin: BaseFlutterBraintreePlugin, FlutterPl
             }
                 
             UIApplication.shared.keyWindow?.rootViewController?.present(existingDropInController, animated: true, completion: nil)
+        } else if call.method == "startApplePay" {
+
+            if let applePayInfo = dict(for: "applePayRequest", in: call) {
+                self.applePayInfo = applePayInfo
+            }
+
+            guard let authorization = getAuthorization(call: call) else {
+                returnAuthorizationMissingError(result: result)
+                return
+            }
+
+            self.authorization = authorization
+
+            let paymentRequest = PKPaymentRequest()
+            paymentRequest.supportedNetworks = [.visa, .masterCard, .amex, .discover]
+            paymentRequest.merchantCapabilities = .capability3DS
+            paymentRequest.countryCode = applePayInfo["countryCode"] as! String
+            paymentRequest.currencyCode = applePayInfo["currencyCode"] as! String
+            paymentRequest.merchantIdentifier = applePayInfo["appleMerchantID"] as! String
+            paymentRequest.requiredBillingContactFields = [.postalAddress, .name]
+            paymentRequest.requiredShippingContactFields = [.emailAddress, .phoneNumber]
+
+            guard let paymentSummaryItems = makePaymentSummaryItems(from: applePayInfo) else {
+                return;
+            }
+            paymentRequest.paymentSummaryItems = paymentSummaryItems;
+
+            guard let applePayController = PKPaymentAuthorizationViewController(paymentRequest: paymentRequest) else {
+                return
+            }
+
+            applePayController.delegate = self
+
+            UIApplication.shared.keyWindow?.rootViewController?.present(applePayController, animated: true, completion: nil)
         }
     }
     
@@ -166,10 +200,13 @@ public class FlutterBraintreeDropInPlugin: BaseFlutterBraintreePlugin, FlutterPl
                 return PKPaymentNetwork.mapRequestedNetwork(rawValue: value)
             })
         }
+        paymentRequest.supportedNetworks = [.visa, .masterCard, .amex, .discover]
         paymentRequest.merchantCapabilities = .capability3DS
         paymentRequest.countryCode = applePayInfo["countryCode"] as! String
         paymentRequest.currencyCode = applePayInfo["currencyCode"] as! String
         paymentRequest.merchantIdentifier = applePayInfo["merchantIdentifier"] as! String
+        paymentRequest.requiredBillingContactFields = [.postalAddress, .name]
+        paymentRequest.requiredShippingContactFields = [.emailAddress, .phoneNumber]
         
         guard let paymentSummaryItems = makePaymentSummaryItems(from: applePayInfo) else {
             return;
@@ -199,8 +236,23 @@ public class FlutterBraintreeDropInPlugin: BaseFlutterBraintreePlugin, FlutterPl
         }
     }
     
-    private func handleApplePayResult(_ result: BTPaymentMethodNonce, flutterResult: FlutterResult) {
-        flutterResult(["paymentMethodNonce": buildPaymentNonceDict(nonce: result)])
+    private func handleApplePayResult(payment: PKPayment, result: BTPaymentMethodNonce, flutterResult: FlutterResult) {
+        var baseNonce = buildPaymentNonceDict(nonce: result)
+        baseNonce["billingAddress"] = [
+            "givenName": payment.billingContact?.name?.givenName ?? "",
+            "surname": payment.billingContact?.name?.familyName ?? "",
+            "phoneNumber": payment.shippingContact?.phoneNumber?.stringValue,
+            "streetAddress": payment.billingContact?.postalAddress?.street,
+            "extendedAddress": payment.billingContact?.postalAddress?.extendedAddress,
+            "locality": payment.billingContact?.postalAddress?.city,
+            "region": payment.billingContact?.postalAddress?.state,
+            "postalCode": payment.billingContact?.postalAddress?.postalCode,
+            "countryCodeAlpha2": payment.billingContact?.postalAddress?.isoCountryCode,
+        ]
+        baseNonce["email"] = payment.shippingContact?.emailAddress;
+        flutterResult([
+            "paymentMethodNonce": baseNonce
+        ])
     }
 }
 
@@ -222,7 +274,7 @@ extension FlutterBraintreeDropInPlugin: PKPaymentAuthorizationViewControllerDele
             }
             
             print(paymentMethod.nonce)
-            self.handleApplePayResult(paymentMethod, flutterResult: self.completionBlock)
+            self.handleApplePayResult(payment: payment, result: paymentMethod, flutterResult: self.completionBlock)
             completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
         }
     }
@@ -238,7 +290,7 @@ extension FlutterBraintreeDropInPlugin: PKPaymentAuthorizationViewControllerDele
             }
             
             print(paymentMethod.nonce)
-            self.handleApplePayResult(paymentMethod, flutterResult: self.completionBlock)
+            self.handleApplePayResult(payment: payment, result: paymentMethod, flutterResult: self.completionBlock)
             completion(.success)
         }
     }

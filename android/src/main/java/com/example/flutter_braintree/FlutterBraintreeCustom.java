@@ -41,6 +41,8 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements PayPalL
                 payPalClient = new PayPalClient(this, braintreeClient);
                 payPalClient.setListener(this);
                 requestPaypalNonce();
+            } else if (type.equals("requestGooglePayment")) {
+                requestGooglePayment();
             } else {
                 throw new Exception("Invalid request type: " + type);
             }
@@ -108,9 +110,37 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements PayPalL
         }
     }
 
+    public void requestGooglePayment() throws Exception {
+        try {
+            Intent intent = getIntent();
+            GooglePaymentRequest googlePaymentRequest = new GooglePaymentRequest()
+                    .transactionInfo(TransactionInfo.newBuilder()
+                            .setTotalPrice(intent.getStringExtra("totalPrice"))
+                            .setCurrencyCode(intent.getStringExtra("currencyCode"))
+                            .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                            .build())
+                    .allowPrepaidCards(intent.getBooleanExtra("allowPrepaidCards", false))
+                    .paypalEnabled(intent.getBooleanExtra("paypalEnabled", false))
+                    .billingAddressRequired(intent.getBooleanExtra("billingAddressRequired", false))
+                    .billingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL)
+                    .phoneNumberRequired(intent.getBooleanExtra("phoneNumberRequired", false))
+                    .environment(intent.getStringExtra("environment"))
+                    .emailRequired(intent.getBooleanExtra("emailRequired", false))
+                    .googleMerchantId(intent.getStringExtra("merchantID"));
+            GooglePayment.requestPayment(braintreeFragment, googlePaymentRequest);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+        GooglePaymentCardNonce googlePaymentCardNonce = (GooglePaymentCardNonce) paymentMethodNonce;
         HashMap<String, Object> nonceMap = new HashMap<String, Object>();
         nonceMap.put("nonce", paymentMethodNonce.getString());
+        nonceMap.put("typeLabel", googlePaymentCardNonce.getCardType());
+        nonceMap.put("description", paymentMethodNonce.getDescription());
+        nonceMap.put("billingAddress", getBillingAddress(googlePaymentCardNonce.getBillingAddress()));
+        nonceMap.put("email", googlePaymentCardNonce.getEmail());
         nonceMap.put("isDefault", paymentMethodNonce.isDefault());
         if (paymentMethodNonce instanceof PayPalAccountNonce) {
             PayPalAccountNonce paypalAccountNonce = (PayPalAccountNonce) paymentMethodNonce;
@@ -127,6 +157,35 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements PayPalL
         result.putExtra("paymentMethodNonce", nonceMap);
         setResult(RESULT_OK, result);
         finish();
+    }
+
+    Map<String, Object> getBillingAddress(PostalAddress postalAddress) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("recipientName", postalAddress.getRecipientName());
+        data.put("phoneNumber", postalAddress.getPhoneNumber());
+        data.put("streetAddress", postalAddress.getStreetAddress());
+        data.put("extendedAddress", postalAddress.getExtendedAddress());
+        data.put("locality", postalAddress.getLocality());
+        data.put("region", postalAddress.getRegion());
+        data.put("postalCode", postalAddress.getPostalCode());
+        data.put("sortingCode", postalAddress.getPostalCode());
+        data.put("countryCodeAlpha2", postalAddress.getCountryCodeAlpha2());
+        data.put("info", getInfo(postalAddress));
+        return data;
+    }
+
+    String getInfo(PostalAddress postalAddress) {
+        String info = "";
+        info += "\n"+postalAddress.getRecipientName();
+        info += "\n"+postalAddress.getPhoneNumber();
+        info += "\n"+postalAddress.getStreetAddress();
+        info += "\n"+postalAddress.getExtendedAddress();
+        info += "\n"+postalAddress.getLocality();
+        info += "\n"+postalAddress.getRegion();
+        info += "\n"+postalAddress.getPostalCode();
+        info += "\n"+postalAddress.getCountryCodeAlpha2();
+
+        return info;
     }
 
     public void onCancel() {

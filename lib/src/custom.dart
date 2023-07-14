@@ -45,4 +45,30 @@ class Braintree {
     if (result == null) return null;
     return BraintreePaymentMethodNonce.fromJson(result);
   }
+
+  static Future<BraintreePaymentMethodNonce?> requestGooglePayment(
+      String authorization,
+      BraintreeGooglePaymentRequest request,) async {
+    final result;
+    try {
+      result = await _kChannel.invokeMethod('requestGooglePayment', {
+        'authorization': authorization,
+        'request': request.toJson(),
+      }).onError((error, stackTrace) {
+        if (error != null) {
+          throw Future.error(error, stackTrace);
+        }
+      }).catchError((error) {
+        throw Future.error(error);
+      });
+    } on PlatformException catch (error) {
+      throw Future.error(error);
+    }
+
+    print('SamUppp request.toJson().toString()' + request.toJson().toString());
+    if (result == null) return null;
+    return BraintreePaymentMethodNonce.fromJson(result);
+  }
+
+
 }

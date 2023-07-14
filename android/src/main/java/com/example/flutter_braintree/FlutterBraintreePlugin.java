@@ -109,6 +109,23 @@ public class FlutterBraintreePlugin implements FlutterPlugin, ActivityAware, Met
       intent.putExtra("payPalPaymentUserAction", (String) request.get("payPalPaymentUserAction"));
       intent.putExtra("billingAgreementDescription", (String) request.get("billingAgreementDescription"));
       activity.startActivityForResult(intent, CUSTOM_ACTIVITY_REQUEST_CODE);
+    } else if (call.method.equals("requestGooglePayment")) {
+      String authorization = call.argument("authorization");
+      Intent intent = new Intent(activity, FlutterBraintreeCustom.class);
+      intent.putExtra("type", "requestGooglePayment");
+      intent.putExtra("authorization", (String) call.argument("authorization"));
+      assert (call.argument("request") instanceof Map);
+      Map request = (Map) call.argument("request");
+      intent.putExtra("totalPrice", (String) request.get("totalPrice"));
+      intent.putExtra("currencyCode", (String) request.get("currencyCode"));
+      intent.putExtra("allowPrepaidCards", (boolean) request.get("allowPrepaidCards"));
+      intent.putExtra("paypalEnabled", (boolean) request.get("paypalEnabled"));
+      intent.putExtra("billingAddressRequired", (boolean) request.get("billingAddressRequired"));
+      intent.putExtra("phoneNumberRequired", (boolean) request.get("phoneNumberRequired"));
+      intent.putExtra("environment", (String) request.get("environment"));
+      intent.putExtra("emailRequired", (boolean) request.get("emailRequired"));
+      intent.putExtra("merchantID", (String) request.get("merchantID"));
+      activity.startActivityForResult(intent, CUSTOM_ACTIVITY_REQUEST_CODE);
     } else {
       result.notImplemented();
       activeResult = null;

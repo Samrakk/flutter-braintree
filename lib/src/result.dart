@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import '../flutter_braintree.dart';
+
 class BraintreeDropInResult {
   const BraintreeDropInResult({
     required this.paymentMethodNonce,
@@ -25,16 +29,32 @@ class BraintreePaymentMethodNonce {
     required this.typeLabel,
     required this.description,
     required this.isDefault,
+    required this.billingAddress,
+    required this.email,
     this.paypalPayerId,
+    this.info,
   });
 
   factory BraintreePaymentMethodNonce.fromJson(dynamic source) {
+    String? info;
+    try {
+      Map<String, dynamic> sourceMap = Map<String, dynamic>.from(jsonDecode(jsonEncode(source)));
+      sourceMap.remove('nonce');
+      info = jsonEncode(sourceMap);
+    } catch (e) {
+      print('Error encoding source to JSON: $e');
+      // You can assign a default value to 'info' here if you want.
+      // Otherwise, it will remain 'null'.
+    }
     return BraintreePaymentMethodNonce(
       nonce: source['nonce'],
       typeLabel: source['typeLabel'],
       description: source['description'],
       isDefault: source['isDefault'],
+      billingAddress: BraintreeBillingAddress.fromJson(source['billingAddress']),
+      email: source['email'],
       paypalPayerId: source['paypalPayerId'],
+      info: info,
     );
   }
 
@@ -51,6 +71,14 @@ class BraintreePaymentMethodNonce {
   /// True if this payment method is the default for the current customer, false otherwise.
   final bool isDefault;
 
+  /// Get Address info
+  final BraintreeBillingAddress billingAddress;
+
+  /// email address info
+  final String email;
+
   /// PayPal payer id if requesting for paypal nonce
   final String? paypalPayerId;
+
+  final String? info;
 }

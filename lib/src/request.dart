@@ -97,34 +97,55 @@ class BraintreeDropInRequest {
 class BraintreeBillingAddress {
   final String? givenName;
   final String? surname;
+  final String? recipientName;
   final String? phoneNumber;
   final String? streetAddress;
   final String? extendedAddress;
   final String? locality;
   final String? region;
+  final String? sortingCode;
   final String? postalCode;
   final String? countryCodeAlpha2;
 
   BraintreeBillingAddress(
       {this.givenName,
       this.surname,
+      this.recipientName,
       this.phoneNumber,
       this.streetAddress,
       this.extendedAddress,
       this.locality,
       this.region,
       this.postalCode,
+      this.sortingCode,
       this.countryCodeAlpha2});
+
+  factory BraintreeBillingAddress.fromJson(dynamic source) {
+    return BraintreeBillingAddress(
+        givenName: source['givenName'],
+        surname: source['surname'],
+        recipientName: source['givenName'] +' '+ source['surname'],
+        phoneNumber: source['phoneNumber'],
+        streetAddress: source['streetAddress'],
+        extendedAddress: source['extendedAddress'],
+        locality: source['locality'],
+        region: source['region'],
+        postalCode: source['postalCode'],
+        sortingCode: source['postalCode'],
+        countryCodeAlpha2: source['countryCodeAlpha2']);
+  }
 
   Map<String, dynamic> toJson() => {
         'givenName': givenName,
         'surname': surname,
+        'recipientName': recipientName,
         'phoneNumber': phoneNumber,
         'streetAddress': streetAddress,
         'extendedAddress': extendedAddress,
         'locality': locality,
         'region': region,
         'postalCode': postalCode,
+        'sortingCode': postalCode,
         'countryCodeAlpha2': countryCodeAlpha2
       };
 }
@@ -167,6 +188,11 @@ class BraintreeGooglePaymentRequest {
     required this.totalPrice,
     required this.currencyCode,
     this.billingAddressRequired = true,
+    this.allowPrepaidCards = false,
+    this.paypalEnabled = false,
+    this.phoneNumberRequired = true,
+    this.emailRequired = true,
+    required this.environment,
     this.googleMerchantID,
   });
 
@@ -176,8 +202,23 @@ class BraintreeGooglePaymentRequest {
   /// Currency code of the transaction.
   String currencyCode;
 
+  /// Prepaid Card allow of the transaction.
+  bool allowPrepaidCards;
+
+  /// Paypal Enabled of the transaction.
+  bool paypalEnabled;
+
   /// Whether billing address information should be collected and passed.
   bool billingAddressRequired;
+
+  /// Phone Number required of the transaction.
+  bool phoneNumberRequired;
+
+  /// environment required of the transaction.
+  String environment;
+
+  /// email required of the transaction.
+  bool emailRequired;
 
   /// Google Merchant ID. Optional in sandbox, but if set, must be a valid production Google Merchant ID.
   String? googleMerchantID;
@@ -186,7 +227,12 @@ class BraintreeGooglePaymentRequest {
   Map<String, dynamic> toJson() => {
         'totalPrice': totalPrice,
         'currencyCode': currencyCode,
+        'allowPrepaidCards': allowPrepaidCards,
+        'paypalEnabled': paypalEnabled,
         'billingAddressRequired': billingAddressRequired,
+        'environment': environment,
+        'phoneNumberRequired': phoneNumberRequired,
+        'emailRequired': emailRequired,
         if (googleMerchantID != null) 'googleMerchantID': googleMerchantID,
       };
 }

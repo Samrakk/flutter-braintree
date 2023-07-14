@@ -65,6 +65,7 @@ class _MyAppState extends State<MyApp> {
                     countryCodeAlpha2: "US",
                   ),
                   googlePaymentRequest: BraintreeGooglePaymentRequest(
+                    environment: '',
                     totalPrice: '4.20',
                     currencyCode: 'USD',
                     billingAddressRequired: false,
