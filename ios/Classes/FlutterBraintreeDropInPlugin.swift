@@ -70,7 +70,6 @@ public class FlutterBraintreeDropInPlugin: BaseFlutterBraintreePlugin, FlutterPl
                 let address = BTThreeDSecurePostalAddress()
                 address.givenName = billingAddress["givenName"] as? String;
                 address.surname = billingAddress["surname"] as? String;
-                address.recipientName = billingAddress["recipientName"] as? String;
                 address.phoneNumber = billingAddress["phoneNumber"] as? String;
                 address.streetAddress = billingAddress["streetAddress"] as? String;
                 address.extendedAddress = billingAddress["extendedAddress"] as? String;
