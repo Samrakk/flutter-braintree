@@ -174,7 +174,7 @@ public class FlutterBraintreeDropInPlugin: BaseFlutterBraintreePlugin, FlutterPl
             paymentRequest.merchantCapabilities = .capability3DS
             paymentRequest.countryCode = applePayInfo["countryCode"] as! String
             paymentRequest.currencyCode = applePayInfo["currencyCode"] as! String
-            paymentRequest.merchantIdentifier = applePayInfo["appleMerchantID"] as! String
+            paymentRequest.merchantIdentifier = applePayInfo["merchantIdentifier"] as! String
             paymentRequest.requiredBillingContactFields = [.postalAddress, .name]
             paymentRequest.requiredShippingContactFields = [.emailAddress, .phoneNumber]
 
