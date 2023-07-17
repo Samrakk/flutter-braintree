@@ -124,7 +124,7 @@ class BraintreeBillingAddress {
     return BraintreeBillingAddress(
         givenName: source['givenName'],
         surname: source['surname'],
-        recipientName: source['givenName'] + ' ' + source['surname'],
+        recipientName: source['recipientName'] ,
         phoneNumber: source['phoneNumber'],
         streetAddress: source['streetAddress'],
         extendedAddress: source['extendedAddress'],

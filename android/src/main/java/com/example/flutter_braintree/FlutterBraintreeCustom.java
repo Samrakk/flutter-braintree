@@ -189,7 +189,7 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements PayPalL
         data.put("postalCode", postalAddress.getPostalCode());
         data.put("sortingCode", postalAddress.getPostalCode());
         data.put("countryCodeAlpha2", postalAddress.getCountryCodeAlpha2());
-        data.put("info", getInfo(postalAddress));
+        data.put("info", "getInfo(postalAddress)");
         return data;
     }
 
