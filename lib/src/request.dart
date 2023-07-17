@@ -136,17 +136,14 @@ class BraintreeBillingAddress {
   }
 
   Map<String, dynamic> toJson() => {
-        'givenName': givenName,
-        'surname': surname,
-        'recipientName': recipientName,
+        'address1': streetAddress,
         'phoneNumber': phoneNumber,
-        'streetAddress': streetAddress,
-        'extendedAddress': extendedAddress,
-        'locality': locality,
-        'region': region,
         'postalCode': postalCode,
-        'sortingCode': postalCode,
-        'countryCodeAlpha2': countryCodeAlpha2
+        'countryCode': countryCodeAlpha2,
+        'city': locality,
+        'name': recipientName,
+        'state': region,
+        'address2': extendedAddress
       };
 }
 
