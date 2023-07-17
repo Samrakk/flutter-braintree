@@ -243,7 +243,7 @@ public class FlutterBraintreeDropInPlugin: BaseFlutterBraintreePlugin, FlutterPl
             "surname": payment.billingContact?.name?.familyName ?? "",
             "phoneNumber": payment.shippingContact?.phoneNumber?.stringValue,
             "streetAddress": payment.billingContact?.postalAddress?.street,
-            "extendedAddress": payment.billingContact?.postalAddress?.extendedAddress,
+            "extendedAddress": "",
             "locality": payment.billingContact?.postalAddress?.city,
             "region": payment.billingContact?.postalAddress?.state,
             "postalCode": payment.billingContact?.postalAddress?.postalCode,
@@ -273,7 +273,7 @@ extension FlutterBraintreeDropInPlugin: PKPaymentAuthorizationViewControllerDele
                 return
             }
             
-            print(paymentMethod.nonce)
+            //print(paymentMethod.nonce)
             self.handleApplePayResult(payment: payment, result: paymentMethod, flutterResult: self.completionBlock)
             completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
         }
@@ -289,7 +289,7 @@ extension FlutterBraintreeDropInPlugin: PKPaymentAuthorizationViewControllerDele
                 return
             }
             
-            print(paymentMethod.nonce)
+            //print(paymentMethod.nonce)
             self.handleApplePayResult(payment: payment, result: paymentMethod, flutterResult: self.completionBlock)
             completion(.success)
         }

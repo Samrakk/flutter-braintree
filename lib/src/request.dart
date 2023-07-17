@@ -124,7 +124,7 @@ class BraintreeBillingAddress {
     return BraintreeBillingAddress(
         givenName: source['givenName'],
         surname: source['surname'],
-        recipientName: source['givenName'] +' '+ source['surname'],
+        recipientName: source['givenName'] + ' ' + source['surname'],
         phoneNumber: source['phoneNumber'],
         streetAddress: source['streetAddress'],
         extendedAddress: source['extendedAddress'],
@@ -375,7 +375,12 @@ class BraintreeApplePayRequest {
     required this.currencyCode,
     required this.countryCode,
     required this.merchantIdentifier,
-    required this.supportedNetworks,
+    this.supportedNetworks = const [
+      ApplePaySupportedNetworks.visa,
+      ApplePaySupportedNetworks.masterCard,
+      ApplePaySupportedNetworks.amex,
+      ApplePaySupportedNetworks.discover,
+    ],
   });
 
   /// A summary of the payment.

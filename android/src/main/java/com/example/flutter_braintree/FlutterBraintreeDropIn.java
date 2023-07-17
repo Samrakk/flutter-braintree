@@ -20,7 +20,7 @@ import com.braintreepayments.api.DropInRequest;
 import com.braintreepayments.api.DropInResult;
 import com.braintreepayments.api.GooglePayRequest;
 import com.braintreepayments.api.PayPalCheckoutRequest;
-import com.braintreepayments.api.PaymentMethodNonce;
+import com.braintreepayments.api.GooglePayCardNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
@@ -161,18 +161,18 @@ public class FlutterBraintreeDropIn implements FlutterPlugin, ActivityAware, Met
         }
         GooglePayRequest googlePayRequest = new GooglePayRequest();
         googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
-                        .setTotalPrice((String) arg.get("totalPrice"))
-                        .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                        .setCurrencyCode((String) arg.get("currencyCode"))
-                        .build())
-                .allowPrepaidCards((Boolean) arg.get("allowPrepaidCards"))
-                .paypalEnabled((Boolean) arg.get("paypalEnabled"))
-                .billingAddressRequired((Boolean) arg.get("billingAddressRequired"))
-                .billingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL)
-                .phoneNumberRequired((Boolean) arg.get("phoneNumberRequired"))
-                .emailRequired((Boolean) arg.get("emailRequired"))
-                .environment((String) arg.get("environment"))
-                .googleMerchantId((String) arg.get("merchantID"));
+                .setTotalPrice((String) arg.get("totalPrice"))
+                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                .setCurrencyCode((String) arg.get("currencyCode"))
+                .build());
+        googlePayRequest.setAllowPrepaidCards(((Boolean) arg.get("allowPrepaidCards")));
+        googlePayRequest.setPayPalEnabled(((Boolean) arg.get("paypalEnabled")));
+        googlePayRequest.setBillingAddressRequired(((Boolean) arg.get("billingAddressRequired")));
+        googlePayRequest.setBillingAddressFormat((WalletConstants.BILLING_ADDRESS_FORMAT_FULL));
+        googlePayRequest.setPhoneNumberRequired(((Boolean) arg.get("phoneNumberRequired")));
+        googlePayRequest.setEmailRequired(((Boolean) arg.get("emailRequired")));
+        googlePayRequest.setEnvironment(((String) arg.get("environment")));
+        googlePayRequest.setGoogleMerchantName(((String) arg.get("merchantID")));
         dropInRequest.setGooglePayRequest(googlePayRequest);
     }
 
@@ -200,14 +200,14 @@ public class FlutterBraintreeDropIn implements FlutterPlugin, ActivityAware, Met
             case DROP_IN_REQUEST_CODE:
                 if (resultCode == Activity.RESULT_OK) {
                     DropInResult dropInResult = data.getParcelableExtra("dropInResult");
-                    PaymentMethodNonce paymentMethodNonce = dropInResult.getPaymentMethodNonce();
+                    GooglePayCardNonce paymentCardNonce = (GooglePayCardNonce) dropInResult.getPaymentMethodNonce();
                     HashMap<String, Object> result = new HashMap<String, Object>();
 
                     HashMap<String, Object> nonceResult = new HashMap<String, Object>();
-                    nonceResult.put("nonce", paymentMethodNonce.getString());
-                    nonceResult.put("typeLabel", dropInResult.getPaymentMethodType().name());
-                    nonceResult.put("description", dropInResult.getPaymentDescription());
-                    nonceResult.put("isDefault", paymentMethodNonce.isDefault());
+                    nonceResult.put("nonce", dropInResult.getPaymentMethodNonce());
+                    nonceResult.put("typeLabel", "paymentCardNonce.getTypeLabel()");
+                    nonceResult.put("description", "paymentCardNonce.getDescription()");
+                    nonceResult.put("isDefault", paymentCardNonce.isDefault());
                     nonceResult.put("billingAddress", paymentCardNonce.getBillingAddress());
                     nonceResult.put("email", paymentCardNonce.getEmail());
 
