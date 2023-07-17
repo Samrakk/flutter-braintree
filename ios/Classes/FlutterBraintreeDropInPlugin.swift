@@ -239,9 +239,13 @@ public class FlutterBraintreeDropInPlugin: BaseFlutterBraintreePlugin, FlutterPl
     
     private func handleApplePayResult(payment: PKPayment, result: BTPaymentMethodNonce, flutterResult: FlutterResult) {
         var baseNonce = buildPaymentNonceDict(nonce: result)
+        var name = payment.billingContact?.name?.givenName ?? "";
+        name += " ";
+        name += payment.billingContact?.name?.familyName ?? "";
         baseNonce["billingAddress"] = [
             "givenName": payment.billingContact?.name?.givenName ?? "",
             "surname": payment.billingContact?.name?.familyName ?? "",
+            "recipientName": name ?? "",
             "phoneNumber": payment.shippingContact?.phoneNumber?.stringValue,
             "streetAddress": payment.billingContact?.postalAddress?.street,
             "extendedAddress": "",
