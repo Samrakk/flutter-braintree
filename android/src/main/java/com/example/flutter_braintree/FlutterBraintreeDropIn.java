@@ -205,8 +205,8 @@ public class FlutterBraintreeDropIn implements FlutterPlugin, ActivityAware, Met
 
                     HashMap<String, Object> nonceResult = new HashMap<String, Object>();
                     nonceResult.put("nonce", dropInResult.getPaymentMethodNonce());
-                    nonceResult.put("typeLabel", "paymentCardNonce.getTypeLabel()");
-                    nonceResult.put("description", "paymentCardNonce.getDescription()");
+                    nonceResult.put("typeLabel", paymentCardNonce.getCardType());
+                    nonceResult.put("description", paymentCardNonce.getCardType());
                     nonceResult.put("isDefault", paymentCardNonce.isDefault());
                     nonceResult.put("billingAddress", paymentCardNonce.getBillingAddress());
                     nonceResult.put("email", paymentCardNonce.getEmail());
