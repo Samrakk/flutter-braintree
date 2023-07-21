@@ -3,6 +3,7 @@ package com.example.flutter_braintree;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -40,10 +41,23 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements PayPalL
 
     private Boolean started = false;
 
+    private GooglePayActivity activity = new GooglePayActivity();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flutter_braintree_custom);
+    }
+
+    @Override
+    protected void onNewIntent(Intent newIntent) {
+        super.onNewIntent(newIntent);
+        setIntent(newIntent);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         try {
             Intent intent = getIntent();
             braintreeClient = new BraintreeClient(this, intent.getStringExtra("authorization"));
@@ -68,18 +82,6 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements PayPalL
             finish();
             return;
         }
-    }
-
-    @Override
-    protected void onNewIntent(Intent newIntent) {
-        super.onNewIntent(newIntent);
-        setIntent(newIntent);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
     }
 
     @Override
@@ -142,7 +144,6 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements PayPalL
             googlePaymentRequest.setEnvironment(intent.getStringExtra("environment"));
             googlePaymentRequest.setEmailRequired(intent.getBooleanExtra("emailRequired", false));
             googlePaymentRequest.setGoogleMerchantName(intent.getStringExtra("merchantID"));
-
             googlePayClient.requestPayment(this, googlePaymentRequest);
         } catch (Exception e) {
             throw e;
@@ -167,7 +168,7 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements PayPalL
             nonceMap.put("email", googlePaymentCardNonce.getEmail());
             nonceMap.put("billingAddress", getBillingAddress(googlePaymentCardNonce.getBillingAddress()));
             nonceMap.put("typeLabel", googlePaymentCardNonce.getCardType());
-            nonceMap.put("description", googlePaymentCardNonce.getCardType() +"****"+ googlePaymentCardNonce.getLastFour());
+            nonceMap.put("description", googlePaymentCardNonce.getCardType() + "****" + googlePaymentCardNonce.getLastFour());
         }
         Intent result = new Intent();
         result.putExtra("type", "paymentMethodNonce");
@@ -206,11 +207,13 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements PayPalL
     }
 
     public void onCancel() {
+        System.out.println("FlutterBraintreeCustom.onCancel");
         setResult(RESULT_CANCELED);
         finish();
     }
 
     public void onError(Exception error) {
+        System.out.println("FlutterBraintreeCustom.onError");
         Intent result = new Intent();
         result.putExtra("error", error);
         setResult(2, result);
