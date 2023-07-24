@@ -80,7 +80,6 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements PayPalL
             result.putExtra("error", e);
             setResult(2, result);
             finish();
-            return;
         }
     }
 
