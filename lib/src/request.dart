@@ -9,6 +9,7 @@ class BraintreeDropInRequest {
     this.requestThreeDSecureVerification = false,
     this.googlePaymentRequest,
     this.paypalRequest,
+    this.creditCardRequest,
     this.applePayRequest,
     this.venmoEnabled = true,
     this.cardEnabled = true,
@@ -48,6 +49,9 @@ class BraintreeDropInRequest {
   /// PayPal request. PayPal will be disabled if this is set to `null`.
   BraintreePayPalRequest? paypalRequest;
 
+  /// Credit Card request. Cred,t card will be disabled if this is set to `null`.
+  BraintreeCreditCardRequest? creditCardRequest;
+
   /// Whether Venmo should be enabled.
   bool venmoEnabled;
 
@@ -85,6 +89,8 @@ class BraintreeDropInRequest {
         if (paypalRequest != null) 'paypalRequest': paypalRequest!.toJson(),
         if (applePayRequest != null)
           'applePayRequest': applePayRequest!.toJson(),
+        if (creditCardRequest != null)
+          'creditCardRequest': creditCardRequest!.toJson(),
         'venmoEnabled': venmoEnabled,
         'cardEnabled': cardEnabled,
         'paypalEnabled': cardEnabled,
@@ -124,7 +130,7 @@ class BraintreeBillingAddress {
     return BraintreeBillingAddress(
         givenName: source['givenName'],
         surname: source['surname'],
-        recipientName: source['recipientName'] ,
+        recipientName: source['recipientName'],
         phoneNumber: source['phoneNumber'],
         streetAddress: source['streetAddress'],
         extendedAddress: source['extendedAddress'],
