@@ -40,6 +40,7 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
                 paypalRequest.currencyCode = requestInfo["currencyCode"] as? String
                 paypalRequest.displayName = requestInfo["displayName"] as? String
                 paypalRequest.billingAgreementDescription = requestInfo["billingAgreementDescription"] as? String
+                paypalRequest.isShippingAddressRequired = true
                 if let intent = requestInfo["payPalPaymentIntent"] as? String {
                     switch intent {
                     case "order":

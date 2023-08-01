@@ -63,6 +63,4 @@ class Braintree {
     if (result == null) return null;
     return BraintreePaymentMethodNonce.fromJson(result);
   }
-
-
 }
