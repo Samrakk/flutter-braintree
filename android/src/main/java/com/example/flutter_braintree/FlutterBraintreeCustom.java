@@ -158,16 +158,18 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements PayPalL
             nonceMap.put("paypalPayerId", paypalAccountNonce.getPayerId());
             nonceMap.put("typeLabel", "PayPal");
             nonceMap.put("description", paypalAccountNonce.getEmail());
+            nonceMap.put("email", paypalAccountNonce.getEmail());
+            nonceMap.put("billingAddress", getBillingAddress(paypalAccountNonce.getBillingAddress()));
         } else if (paymentMethodNonce instanceof CardNonce) {
             CardNonce cardNonce = (CardNonce) paymentMethodNonce;
             nonceMap.put("typeLabel", cardNonce.getCardType());
             nonceMap.put("description", "ending in ••" + cardNonce.getLastTwo());
         } else if (paymentMethodNonce instanceof GooglePayCardNonce) {
             GooglePayCardNonce googlePaymentCardNonce = (GooglePayCardNonce) paymentMethodNonce;
-            nonceMap.put("email", googlePaymentCardNonce.getEmail());
-            nonceMap.put("billingAddress", getBillingAddress(googlePaymentCardNonce.getBillingAddress()));
             nonceMap.put("typeLabel", googlePaymentCardNonce.getCardType());
             nonceMap.put("description", googlePaymentCardNonce.getCardType() + "****" + googlePaymentCardNonce.getLastFour());
+            nonceMap.put("email", googlePaymentCardNonce.getEmail());
+            nonceMap.put("billingAddress", getBillingAddress(googlePaymentCardNonce.getBillingAddress()));
         }
         Intent result = new Intent();
         result.putExtra("type", "paymentMethodNonce");
