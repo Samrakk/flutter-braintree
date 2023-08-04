@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import com.braintreepayments.api.DropInRequest;
 import com.braintreepayments.api.DropInResult;
 import com.braintreepayments.api.GooglePayRequest;
+import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PayPalCheckoutRequest;
 import com.braintreepayments.api.GooglePayCardNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
@@ -26,6 +27,7 @@ import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
+import com.braintreepayments.api.PaymentMethodNonce;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -177,6 +179,7 @@ public class FlutterBraintreeDropIn implements FlutterPlugin, ActivityAware, Met
     }
 
     private static void readPayPalParameters(DropInRequest dropInRequest, MethodCall call) {
+        System.out.println("DropInRequest_PayPal");
         HashMap<String, Object> arg = call.argument("paypalRequest");
         if (arg == null) {
             dropInRequest.setPayPalDisabled(true);
@@ -200,17 +203,27 @@ public class FlutterBraintreeDropIn implements FlutterPlugin, ActivityAware, Met
             case DROP_IN_REQUEST_CODE:
                 if (resultCode == Activity.RESULT_OK) {
                     DropInResult dropInResult = data.getParcelableExtra("dropInResult");
-                    GooglePayCardNonce paymentCardNonce = (GooglePayCardNonce) dropInResult.getPaymentMethodNonce();
-                    HashMap<String, Object> result = new HashMap<String, Object>();
+                    PaymentMethodNonce paymentNonce = dropInResult.getPaymentMethodNonce();
 
                     HashMap<String, Object> nonceResult = new HashMap<String, Object>();
                     nonceResult.put("nonce", dropInResult.getPaymentMethodNonce());
                     nonceResult.put("typeLabel", dropInResult.getPaymentMethodType().name());
                     nonceResult.put("description", dropInResult.getPaymentDescription());
-                    nonceResult.put("isDefault", paymentCardNonce.isDefault());
-                    nonceResult.put("billingAddress", paymentCardNonce.getBillingAddress());
-                    nonceResult.put("email", paymentCardNonce.getEmail());
+                    nonceResult.put("isDefault", paymentNonce.isDefault());
 
+                    if (paymentNonce instanceof GooglePayCardNonce) {
+                        System.out.println("GooglePayCardNonce_payment");
+                        GooglePayCardNonce nonce = (GooglePayCardNonce) paymentNonce;
+                        nonceResult.put("billingAddress", nonce.getBillingAddress());
+                        nonceResult.put("email", nonce.getEmail());
+                    } else if (paymentNonce instanceof PayPalAccountNonce) {
+                        System.out.println("PayPalAccountNonce_payment");
+                        PayPalAccountNonce nonce = (PayPalAccountNonce) paymentNonce;
+                        nonceResult.put("billingAddress", nonce.getBillingAddress());
+                        nonceResult.put("email", nonce.getEmail());
+                    }
+
+                    HashMap<String, Object> result = new HashMap<String, Object>();
                     result.put("paymentMethodNonce", nonceResult);
                     result.put("deviceData", dropInResult.getDeviceData());
                     this.activeResult.success(result);

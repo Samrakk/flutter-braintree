@@ -19,6 +19,10 @@ import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PayPalCheckoutRequest;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalListener;
+import com.braintreepayments.api.PayPalNativeCheckoutAccountNonce;
+import com.braintreepayments.api.PayPalNativeCheckoutClient;
+import com.braintreepayments.api.PayPalNativeCheckoutListener;
+import com.braintreepayments.api.PayPalNativeCheckoutRequest;
 import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PayPalVaultRequest;
 import com.braintreepayments.api.PaymentMethodNonce;
@@ -33,15 +37,11 @@ import com.google.android.gms.wallet.WalletConstants;
 
 import java.util.HashMap;
 
-public class FlutterBraintreeCustom extends AppCompatActivity implements PayPalListener, GooglePayListener {
+public class FlutterBraintreeCustom extends AppCompatActivity implements GooglePayListener, PayPalNativeCheckoutListener {
     private BraintreeClient braintreeClient;
     private PayPalClient payPalClient;
-
+    private PayPalNativeCheckoutClient payPalNativeCheckoutClient;
     private GooglePayClient googlePayClient;
-
-    private Boolean started = false;
-
-    private GooglePayActivity activity = new GooglePayActivity();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,13 +60,14 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements PayPalL
         super.onStart();
         try {
             Intent intent = getIntent();
+            System.out.println("braintree_authorization_token" + intent.getStringExtra("authorization"));
             braintreeClient = new BraintreeClient(this, intent.getStringExtra("authorization"));
             String type = intent.getStringExtra("type");
             if (type.equals("tokenizeCreditCard")) {
                 tokenizeCreditCard();
             } else if (type.equals("requestPaypalNonce")) {
-                payPalClient = new PayPalClient(this, braintreeClient);
-                payPalClient.setListener(this);
+                payPalNativeCheckoutClient = new PayPalNativeCheckoutClient(braintreeClient);
+                payPalNativeCheckoutClient.setListener(this);
                 requestPaypalNonce();
             } else if (type.equals("requestGooglePayment")) {
                 googlePayClient = new GooglePayClient(this, braintreeClient);
@@ -112,17 +113,23 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements PayPalL
 
     protected void requestPaypalNonce() {
         Intent intent = getIntent();
+        System.out.println("DropInRequest_Custom :"+intent.getStringExtra("amount"));
         if (intent.getStringExtra("amount") == null) {
             // Vault flow
-            PayPalVaultRequest vaultRequest = new PayPalVaultRequest();
+            PayPalNativeCheckoutRequest vaultRequest = new PayPalNativeCheckoutRequest(intent.getStringExtra("amount"));
             vaultRequest.setDisplayName(intent.getStringExtra("displayName"));
             vaultRequest.setBillingAgreementDescription(intent.getStringExtra("billingAgreementDescription"));
-            payPalClient.tokenizePayPalAccount(this, vaultRequest);
+            vaultRequest.setShippingAddressRequired(true);
+            payPalNativeCheckoutClient.launchNativeCheckout(this, vaultRequest);
         } else {
             // Checkout flow
-            PayPalCheckoutRequest checkOutRequest = new PayPalCheckoutRequest(intent.getStringExtra("amount"));
-            checkOutRequest.setCurrencyCode(intent.getStringExtra("currencyCode"));
-            payPalClient.tokenizePayPalAccount(this, checkOutRequest);
+            PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest(intent.getStringExtra("amount"));
+            request.setCurrencyCode(intent.getStringExtra("currencyCode"));
+            request.setDisplayName(intent.getStringExtra("displayName"));
+            request.setBillingAgreementDescription(intent.getStringExtra("billingAgreementDescription"));
+            request.setReturnUrl( "com.ticketnetwork.TicketNetwork://paypalpay");
+            request.setMerchantAccountId("dd2h9cwffvgmqwdm");
+            payPalNativeCheckoutClient.launchNativeCheckout(this, request);
         }
     }
 
@@ -221,8 +228,9 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements PayPalL
         finish();
     }
 
+
     @Override
-    public void onPayPalSuccess(@NonNull PayPalAccountNonce payPalAccountNonce) {
+    public void onPayPalSuccess(@NonNull PayPalNativeCheckoutAccountNonce payPalAccountNonce) {
         onPaymentMethodNonceCreated(payPalAccountNonce);
     }
 

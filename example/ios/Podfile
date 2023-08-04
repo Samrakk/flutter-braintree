@@ -31,6 +31,10 @@ target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
+  #pod files
+  pod 'Braintree/PayPalNativeCheckout'
+  pod 'Braintree/Core'
+
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 
