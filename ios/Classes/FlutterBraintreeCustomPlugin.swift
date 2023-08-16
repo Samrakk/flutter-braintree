@@ -2,7 +2,6 @@ import Flutter
 import UIKit
 import Braintree
 import BraintreeDropIn
-import BraintreePayPalNativeCheckout
 
 public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPlugin, BTViewControllerPresentingDelegate {
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -29,7 +28,7 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
         let client = BTAPIClient(authorization: authorization)
         
         if call.method == "requestPaypalNonce" {
-            let driver = BTPayPalNativeCheckoutClient(apiClient: client!)
+            let driver = BTPayPalDriver(apiClient: client!)
             
             guard let requestInfo = dict(for: "request", in: call) else {
                 isHandlingResult = false
@@ -37,7 +36,7 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
             }
             
             if let amount = requestInfo["amount"] as? String {
-                let paypalRequest = BTPayPalNativeCheckoutRequest(amount: amount)
+                let paypalRequest = BTPayPalCheckoutRequest(amount: amount)
                 paypalRequest.currencyCode = requestInfo["currencyCode"] as? String
                 paypalRequest.displayName = requestInfo["displayName"] as? String
                 paypalRequest.billingAgreementDescription = requestInfo["billingAgreementDescription"] as? String
@@ -65,7 +64,7 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
                     self.isHandlingResult = false
                 }
             } else {
-                let paypalRequest = BTPayPalNativeVaultRequest()
+                let paypalRequest = BTPayPalVaultRequest()
                 paypalRequest.displayName = requestInfo["displayName"] as? String
                 paypalRequest.billingAgreementDescription = requestInfo["billingAgreementDescription"] as? String
                 
