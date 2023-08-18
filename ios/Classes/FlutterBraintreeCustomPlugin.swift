@@ -59,6 +59,7 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
                         paypalRequest.userAction = BTPayPalRequestUserAction.default
                     }
                 }
+                print("#paypal if driver.tokenizePayPalAccount")
                 driver.tokenizePayPalAccount(with: paypalRequest) { (nonce, error) in
                     self.handleResult(nonce: nonce, error: error, flutterResult: result)
                     self.isHandlingResult = false
@@ -67,7 +68,7 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
                 let paypalRequest = BTPayPalVaultRequest()
                 paypalRequest.displayName = requestInfo["displayName"] as? String
                 paypalRequest.billingAgreementDescription = requestInfo["billingAgreementDescription"] as? String
-                
+                print("#paypal else driver.tokenizePayPalAccount")
                 driver.tokenizePayPalAccount(with: paypalRequest) { (nonce, error) in
                     self.handleResult(nonce: nonce, error: error, flutterResult: result)
                     self.isHandlingResult = false
@@ -97,6 +98,7 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
     }
     
     private func handleResult(nonce: BTPaymentMethodNonce?, error: Error?, flutterResult: FlutterResult) {
+        print("#paypal handleResult")
         if error != nil {
             returnBraintreeError(result: flutterResult, error: error!)
         } else if nonce == nil {

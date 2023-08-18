@@ -243,25 +243,45 @@ class BraintreeGooglePaymentRequest {
 class BraintreePayPalRequest {
   BraintreePayPalRequest({
     required this.amount,
-    this.currencyCode,
-    this.displayName,
-    this.billingAgreementDescription,
+    required this.currencyCode,
+    required this.displayName,
+    required this.billingAgreementDescription,
+    required this.returnURL,
+    this.merchantAccountId,
+    required this.localeCode,
+    this.shippingAddressRequired = false,
+    this.shippingAddressEditable = false,
     this.payPalPaymentIntent = PayPalPaymentIntent.authorize,
     this.payPalPaymentUserAction = PayPalPaymentUserAction.default_,
   });
 
   /// Amount of the transaction. If [amount] is `null`, PayPal will use the billing agreement (Vault) flow.
   /// If [amount] is set, PayPal will follow the one time payment (Checkout) flow.
-  String? amount;
+  String amount;
 
   /// Currency code. If set to `null`, PayPal will choose it based on the active merchant account in the client token.
-  String? currencyCode;
+  String currencyCode;
 
   /// The merchant name displayed in the PayPal flow. If set to `null`, PayPal will use the company name in your Braintree account.
-  String? displayName;
+  String displayName;
 
   /// Description for the billing agreement for the Vault flow.
   String? billingAgreementDescription;
+
+  /// Description for return URL.
+  String returnURL;
+
+  /// Description for merchant Account ID.
+  String? merchantAccountId;
+
+  /// Description for local code.
+  String localeCode;
+
+  /// Description for Shipping Address Required.
+  bool shippingAddressRequired;
+
+  /// Description for Shipping Address Editable.
+  bool shippingAddressEditable;
 
   /// The payment intent in the PayPal Checkout flow.
   PayPalPaymentIntent payPalPaymentIntent;
@@ -274,9 +294,13 @@ class BraintreePayPalRequest {
   Map<String, dynamic> toJson() => {
         if (amount != null) 'amount': amount,
         if (currencyCode != null) 'currencyCode': currencyCode,
-        if (displayName != null) 'displayName': displayName,
-        if (billingAgreementDescription != null)
-          'billingAgreementDescription': billingAgreementDescription,
+        'displayName': displayName,
+        'billingAgreementDescription': billingAgreementDescription,
+        'returnURL': returnURL,
+        if (merchantAccountId != null) 'merchantAccountId': merchantAccountId,
+        'localeCode': localeCode,
+        'shippingAddressRequired': shippingAddressRequired,
+        'shippingAddressEditable': shippingAddressEditable,
         'payPalPaymentIntent': payPalPaymentIntent.name,
         'payPalPaymentUserAction': payPalPaymentUserAction.name,
       };

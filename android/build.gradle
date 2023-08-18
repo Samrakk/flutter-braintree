@@ -54,6 +54,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.braintreepayments.api:paypal:4.27.2'
+    implementation 'com.braintreepayments.api:paypal-native-checkout:4.27.2'
     components.all {
         allVariants {
             withDependencies { deps ->

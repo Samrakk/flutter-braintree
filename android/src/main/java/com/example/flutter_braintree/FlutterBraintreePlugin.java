@@ -108,6 +108,11 @@ public class FlutterBraintreePlugin implements FlutterPlugin, ActivityAware, Met
       intent.putExtra("payPalPaymentIntent", (String) request.get("payPalPaymentIntent"));
       intent.putExtra("payPalPaymentUserAction", (String) request.get("payPalPaymentUserAction"));
       intent.putExtra("billingAgreementDescription", (String) request.get("billingAgreementDescription"));
+      intent.putExtra("returnURL", (String) request.get("returnURL"));
+      intent.putExtra("merchantAccountId", (String) request.get("merchantAccountId"));
+      intent.putExtra("localeCode", (String) request.get("localeCode"));
+      intent.putExtra("shippingAddressRequired", (boolean) request.get("shippingAddressRequired"));
+      intent.putExtra("shippingAddressEditable", (boolean) request.get("shippingAddressEditable"));
       activity.startActivityForResult(intent, CUSTOM_ACTIVITY_REQUEST_CODE);
     } else if (call.method.equals("requestGooglePayment")) {
       String authorization = call.argument("authorization");

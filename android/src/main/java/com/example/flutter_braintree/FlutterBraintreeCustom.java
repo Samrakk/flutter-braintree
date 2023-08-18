@@ -3,13 +3,11 @@ package com.example.flutter_braintree;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.Card;
-import com.braintreepayments.api.GooglePayActivity;
 import com.braintreepayments.api.GooglePayClient;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
@@ -18,8 +16,14 @@ import com.braintreepayments.api.GooglePayListener;
 import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PayPalCheckoutRequest;
 import com.braintreepayments.api.PayPalClient;
+import com.braintreepayments.api.PayPalLineItem;
 import com.braintreepayments.api.PayPalListener;
-import com.braintreepayments.api.PayPalRequest;
+import com.braintreepayments.api.PayPalNativeCheckoutAccountNonce;
+import com.braintreepayments.api.PayPalNativeCheckoutClient;
+import com.braintreepayments.api.PayPalNativeCheckoutListener;
+import com.braintreepayments.api.PayPalNativeCheckoutRequest;
+import com.braintreepayments.api.PayPalNativeCheckoutVaultRequest;
+import com.braintreepayments.api.PayPalPaymentIntent;
 import com.braintreepayments.api.PayPalVaultRequest;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.PostalAddress;
@@ -31,11 +35,15 @@ import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
-public class FlutterBraintreeCustom extends AppCompatActivity implements GooglePayListener, PayPalListener {
+public class FlutterBraintreeCustom extends AppCompatActivity implements GooglePayListener, PayPalNativeCheckoutListener {
     private BraintreeClient braintreeClient;
     private PayPalClient payPalClient;
+
+    private PayPalNativeCheckoutClient payPalNativeClient;
     private GooglePayClient googlePayClient;
 
     @Override
@@ -57,12 +65,15 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements GoogleP
             Intent intent = getIntent();
             System.out.println("braintree_authorization_token" + intent.getStringExtra("authorization"));
             braintreeClient = new BraintreeClient(this, intent.getStringExtra("authorization"));
+            System.out.println("FlutterBraintreeCustom.onStart"+braintreeClient.getReturnUrlScheme());
             String type = intent.getStringExtra("type");
             if (type.equals("tokenizeCreditCard")) {
                 tokenizeCreditCard();
             } else if (type.equals("requestPaypalNonce")) {
-                payPalClient = new PayPalClient(this,braintreeClient);
-                payPalClient.setListener(this);
+                //payPalClient = new PayPalClient(this,braintreeClient);
+                //payPalClient.setListener(this);
+                payPalNativeClient = new PayPalNativeCheckoutClient(braintreeClient);
+                payPalNativeClient.setListener(this);
                 requestPaypalNonce();
             } else if (type.equals("requestGooglePayment")) {
                 googlePayClient = new GooglePayClient(this, braintreeClient);
@@ -108,23 +119,45 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements GoogleP
 
     protected void requestPaypalNonce() {
         Intent intent = getIntent();
-        System.out.println("DropInRequest_Custom :"+intent.getStringExtra("amount"));
         if (intent.getStringExtra("amount") == null) {
             // Vault flow
-            PayPalVaultRequest request = new PayPalVaultRequest();
+           // PayPalVaultRequest request = new PayPalVaultRequest();
+           // request.setDisplayName(intent.getStringExtra("displayName"));
+           // request.setBillingAgreementDescription(intent.getStringExtra("billingAgreementDescription"));
+           // request.setShippingAddressRequired(true);
+
+            PayPalNativeCheckoutVaultRequest request = new PayPalNativeCheckoutVaultRequest();
             request.setDisplayName(intent.getStringExtra("displayName"));
             request.setBillingAgreementDescription(intent.getStringExtra("billingAgreementDescription"));
-            request.setShippingAddressRequired(true);
-            payPalClient.tokenizePayPalAccount(this, request);
+            request.setLocaleCode(intent.getStringExtra("localeCode"));
+            request.setShippingAddressRequired(intent.getBooleanExtra("shippingAddressRequired",false));
+            request.setShippingAddressEditable(intent.getBooleanExtra("shippingAddressEditable",false));
+            request.setReturnUrl(intent.getStringExtra("returnURL"));
+            request.setMerchantAccountId(intent.getStringExtra("merchantAccountId"));
+            payPalNativeClient.launchNativeCheckout(this, request);
         } else {
             // Checkout flow
-            PayPalCheckoutRequest request = new PayPalCheckoutRequest(intent.getStringExtra("amount"));
-            request.setCurrencyCode(intent.getStringExtra("currencyCode"));
-            request.setDisplayName(intent.getStringExtra("displayName"));
-            request.setBillingAgreementDescription(intent.getStringExtra("billingAgreementDescription"));
+            //PayPalCheckoutRequest request = new PayPalCheckoutRequest(intent.getStringExtra("amount"));
+            //request.setCurrencyCode(intent.getStringExtra("currencyCode"));
+            //request.setDisplayName(intent.getStringExtra("displayName")+"_paypal_test");
+            //request.setBillingAgreementDescription(intent.getStringExtra("billingAgreementDescription"));
+            //request.setLocaleCode("en_US");
+            //request.setShippingAddressRequired(true);
+            //request.setShippingAddressEditable(true);
+            //request.setIntent(PayPalPaymentIntent.AUTHORIZE);
             //request.setReturnUrl("com.ticketnetwork.TicketNetwork://paypalpay");
-            request.setMerchantAccountId("dd2h9cwffvgmqwdm");
-            payPalClient.tokenizePayPalAccount(this, request);
+            //request.setMerchantAccountId("dd2h9cwffvgmqwdm");
+
+            PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest(intent.getStringExtra("amount"));
+            request.setCurrencyCode(intent.getStringExtra("currencyCode"));
+            request.setDisplayName(intent.getStringExtra("displayName")+"_paypal_test");
+            request.setBillingAgreementDescription(intent.getStringExtra("billingAgreementDescription"));
+            request.setLocaleCode(intent.getStringExtra("localeCode"));
+            request.setShippingAddressRequired(intent.getBooleanExtra("shippingAddressRequired",false));
+            request.setShippingAddressEditable(intent.getBooleanExtra("shippingAddressEditable",false));
+            request.setMerchantAccountId(intent.getStringExtra("merchantAccountId"));
+            request.setReturnUrl(intent.getStringExtra("returnURL"));
+            payPalNativeClient.launchNativeCheckout(this, request);
         }
     }
 
@@ -239,8 +272,9 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements GoogleP
         }
     }
 
+
     @Override
-    public void onPayPalSuccess(@NonNull PayPalAccountNonce paymentMethodNonce) {
+    public void onPayPalSuccess(@NonNull PayPalNativeCheckoutAccountNonce paymentMethodNonce) {
         onPaymentMethodNonceCreated(paymentMethodNonce);
     }
 
