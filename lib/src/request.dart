@@ -76,7 +76,8 @@ class BraintreeDropInRequest {
   BraintreeApplePayRequest? applePayRequest;
 
   /// Converts this request object into a JSON-encodable format.
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         if (clientToken != null) 'clientToken': clientToken,
         if (tokenizationKey != null) 'tokenizationKey': tokenizationKey,
         if (email != null) 'email': email,
@@ -113,18 +114,17 @@ class BraintreeBillingAddress {
   final String? postalCode;
   final String? countryCodeAlpha2;
 
-  BraintreeBillingAddress(
-      {this.givenName,
-      this.surname,
-      this.recipientName,
-      this.phoneNumber,
-      this.streetAddress,
-      this.extendedAddress,
-      this.locality,
-      this.region,
-      this.postalCode,
-      this.sortingCode,
-      this.countryCodeAlpha2});
+  BraintreeBillingAddress({this.givenName,
+    this.surname,
+    this.recipientName,
+    this.phoneNumber,
+    this.streetAddress,
+    this.extendedAddress,
+    this.locality,
+    this.region,
+    this.postalCode,
+    this.sortingCode,
+    this.countryCodeAlpha2});
 
   factory BraintreeBillingAddress.fromJson(dynamic source) {
     return BraintreeBillingAddress(
@@ -141,7 +141,8 @@ class BraintreeBillingAddress {
         countryCodeAlpha2: source['countryCodeAlpha2']);
   }
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         'address1': streetAddress,
         'phoneNumber': phoneNumber,
         'postalCode': postalCode,
@@ -177,7 +178,8 @@ class BraintreeCreditCardRequest {
   /// Cardholder name
   String? cardholderName;
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         'cardNumber': cardNumber,
         'expirationMonth': expirationMonth,
         'expirationYear': expirationYear,
@@ -227,7 +229,8 @@ class BraintreeGooglePaymentRequest {
   String? googleMerchantID;
 
   /// Converts this request object into a JSON-encodable format.
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         'totalPrice': totalPrice,
         'currencyCode': currencyCode,
         'allowPrepaidCards': allowPrepaidCards,
@@ -246,13 +249,13 @@ class BraintreePayPalRequest {
     required this.currencyCode,
     required this.displayName,
     required this.billingAgreementDescription,
-    required this.returnURL,
+    this.returnURL,
     this.merchantAccountId,
     required this.localeCode,
     this.shippingAddressRequired = false,
     this.shippingAddressEditable = false,
-    this.payPalPaymentIntent = PayPalPaymentIntent.authorize,
-    this.payPalPaymentUserAction = PayPalPaymentUserAction.default_,
+    this.payPalPaymentIntent = PayPalPaymentIntent.sale,
+    this.payPalPaymentUserAction = PayPalPaymentUserAction.commit,
   });
 
   /// Amount of the transaction. If [amount] is `null`, PayPal will use the billing agreement (Vault) flow.
@@ -269,7 +272,7 @@ class BraintreePayPalRequest {
   String? billingAgreementDescription;
 
   /// Description for return URL.
-  String returnURL;
+  String? returnURL;
 
   /// Description for merchant Account ID.
   String? merchantAccountId;
@@ -291,12 +294,13 @@ class BraintreePayPalRequest {
   PayPalPaymentUserAction payPalPaymentUserAction;
 
   /// Converts this request object into a JSON-encodable format.
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         if (amount != null) 'amount': amount,
         if (currencyCode != null) 'currencyCode': currencyCode,
         'displayName': displayName,
         'billingAgreementDescription': billingAgreementDescription,
-        'returnURL': returnURL,
+        if (returnURL != null) 'returnURL': returnURL,
         if (merchantAccountId != null) 'merchantAccountId': merchantAccountId,
         'localeCode': localeCode,
         'shippingAddressRequired': shippingAddressRequired,
@@ -317,7 +321,7 @@ enum PayPalPaymentUserAction {
   /// call-to-action button on the PayPal Checkout page, and that no final
   /// confirmation page will be shown on the merchant's checkout page. This
   /// option works for both checkout and vault flows.
-  commit
+  commit,
 }
 
 enum PayPalPaymentIntent {
@@ -388,7 +392,8 @@ class ApplePaySummaryItem {
   final ApplePaySummaryItemType type;
 
   /// Converts this summary item object into a JSON-encodable format.
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         'label': label,
         'amount': amount,
         'type': type.rawValue,
@@ -429,9 +434,10 @@ class BraintreeApplePayRequest {
   final List<ApplePaySupportedNetworks> supportedNetworks;
 
   /// Converts this request object into a JSON-encodable format.
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         'paymentSummaryItems':
-            paymentSummaryItems.map((item) => item.toJson()).toList(),
+        paymentSummaryItems.map((item) => item.toJson()).toList(),
         'currencyCode': currencyCode,
         'displayName': displayName,
         'countryCode': countryCode,
