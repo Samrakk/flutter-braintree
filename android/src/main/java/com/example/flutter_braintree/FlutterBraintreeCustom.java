@@ -21,6 +21,7 @@ import com.braintreepayments.api.PayPalListener;
 import com.braintreepayments.api.PayPalNativeCheckoutAccountNonce;
 import com.braintreepayments.api.PayPalNativeCheckoutClient;
 import com.braintreepayments.api.PayPalNativeCheckoutListener;
+import com.braintreepayments.api.PayPalNativeCheckoutPaymentIntent;
 import com.braintreepayments.api.PayPalNativeCheckoutRequest;
 import com.braintreepayments.api.PayPalNativeCheckoutVaultRequest;
 import com.braintreepayments.api.PayPalPaymentIntent;
@@ -39,7 +40,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-public class FlutterBraintreeCustom extends AppCompatActivity implements GooglePayListener, PayPalNativeCheckoutListener, PayPalListener {
+public class FlutterBraintreeCustom
+        extends AppCompatActivity
+        implements GooglePayListener, PayPalNativeCheckoutListener, PayPalListener {
     private BraintreeClient braintreeClient;
     private PayPalClient payPalClient;
 
@@ -63,9 +66,7 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements GoogleP
         super.onStart();
         try {
             Intent intent = getIntent();
-            System.out.println("braintree_authorization_token" + intent.getStringExtra("authorization"));
             braintreeClient = new BraintreeClient(this, intent.getStringExtra("authorization"));
-            System.out.println("FlutterBraintreeCustom.onStart" + braintreeClient.getReturnUrlScheme());
             String type = intent.getStringExtra("type");
             if (type.equals("tokenizeCreditCard")) {
                 tokenizeCreditCard();
@@ -104,69 +105,72 @@ public class FlutterBraintreeCustom extends AppCompatActivity implements GoogleP
         card.setCardholderName(intent.getStringExtra("cardholderName"));
         card.setNumber(intent.getStringExtra("cardNumber"));
 
-
         CardClient cardClient = new CardClient(braintreeClient);
-        CardTokenizeCallback callback = (cardNonce, error) -> {
+        cardClient.tokenize(card, (cardNonce, error) -> {
             if (cardNonce != null) {
                 onPaymentMethodNonceCreated(cardNonce);
             }
             if (error != null) {
                 onError(error);
             }
-        };
-        cardClient.tokenize(card, callback);
+        });
     }
 
     protected void requestPaypalNonce() {
         Intent intent = getIntent();
         if (intent.getStringExtra("amount") == null) {
             // Vault flow
+            /*
             PayPalVaultRequest request = new PayPalVaultRequest();
             request.setDisplayName(intent.getStringExtra("displayName"));
+            request.setLocaleCode(intent.getStringExtra("localeCode"));
             request.setBillingAgreementDescription(intent.getStringExtra("billingAgreementDescription"));
             request.setShippingAddressRequired(intent.getBooleanExtra("shippingAddressRequired", false));
             request.setShippingAddressEditable(intent.getBooleanExtra("shippingAddressEditable", false));
             request.setMerchantAccountId(intent.getStringExtra("merchantAccountId"));
-            request.setRiskCorrelationId("ticketnetwork_paypal_testing");
             payPalClient.tokenizePayPalAccount(this, request);
+            */
 
-            /*
             PayPalNativeCheckoutVaultRequest request = new PayPalNativeCheckoutVaultRequest();
             request.setDisplayName(intent.getStringExtra("displayName"));
             request.setBillingAgreementDescription(intent.getStringExtra("billingAgreementDescription"));
             request.setLocaleCode(intent.getStringExtra("localeCode"));
-            request.setShippingAddressRequired(intent.getBooleanExtra("shippingAddressRequired",false));
-            request.setShippingAddressEditable(intent.getBooleanExtra("shippingAddressEditable",false));
+            request.setShippingAddressRequired(intent.getBooleanExtra("shippingAddressRequired", false));
+            request.setShippingAddressEditable(intent.getBooleanExtra("shippingAddressEditable", false));
             request.setReturnUrl(intent.getStringExtra("returnURL"));
             request.setMerchantAccountId(intent.getStringExtra("merchantAccountId"));
             payPalNativeClient.launchNativeCheckout(this, request);
-             */
+
         } else {
+            /*
             PayPalCheckoutRequest request = new PayPalCheckoutRequest(intent.getStringExtra("amount"));
+            request.setCurrencyCode(intent.getStringExtra("currencyCode"));
+            request.setDisplayName(intent.getStringExtra("displayName") + "_paypal_test");
+            request.setLocaleCode(intent.getStringExtra("localeCode"));
+            request.setBillingAgreementDescription(intent.getStringExtra("billingAgreementDescription"));
+            request.setShippingAddressRequired(intent.getBooleanExtra("shippingAddressRequired", false));
+            request.setShippingAddressEditable(intent.getBooleanExtra("shippingAddressEditable", false));
+            request.setMerchantAccountId(intent.getStringExtra("merchantAccountId"));
+            request.setIntent(PayPalPaymentIntent.SALE);
+            request.setUserAction(PayPalCheckoutRequest.USER_ACTION_COMMIT);
+            System.out.println("amount :"+request.getAmount()+"\n localcode :"+request.getLocaleCode());
+            payPalClient.tokenizePayPalAccount(this, request);
+            */
+
+            PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest(intent.getStringExtra("amount"));
             request.setCurrencyCode(intent.getStringExtra("currencyCode"));
             request.setDisplayName(intent.getStringExtra("displayName") + "_paypal_test");
             request.setBillingAgreementDescription(intent.getStringExtra("billingAgreementDescription"));
             request.setLocaleCode(intent.getStringExtra("localeCode"));
             request.setShippingAddressRequired(intent.getBooleanExtra("shippingAddressRequired", false));
             request.setShippingAddressEditable(intent.getBooleanExtra("shippingAddressEditable", false));
-            request.setIntent(PayPalPaymentIntent.SALE);
-            request.setUserAction(PayPalCheckoutRequest.USER_ACTION_COMMIT);
-            request.setMerchantAccountId(intent.getStringExtra("merchantAccountId"));
-            request.setRiskCorrelationId("ticketnetwork_paypal_testing");
-            payPalClient.tokenizePayPalAccount(this, request);
-
-            /*
-            PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest(intent.getStringExtra("amount"));
-            request.setCurrencyCode(intent.getStringExtra("currencyCode"));
-            request.setDisplayName(intent.getStringExtra("displayName")+"_paypal_test");
-            request.setBillingAgreementDescription(intent.getStringExtra("billingAgreementDescription"));
-            request.setLocaleCode(intent.getStringExtra("localeCode"));
-            request.setShippingAddressRequired(intent.getBooleanExtra("shippingAddressRequired",false));
-            request.setShippingAddressEditable(intent.getBooleanExtra("shippingAddressEditable",false));
             request.setMerchantAccountId(intent.getStringExtra("merchantAccountId"));
             request.setReturnUrl(intent.getStringExtra("returnURL"));
+            request.setIntent(PayPalNativeCheckoutPaymentIntent.SALE);
+            request.setUserAction(PayPalNativeCheckoutRequest.USER_ACTION_COMMIT);
+            System.out.println("amount :" + request.getAmount() + "\n localcode :" + request.getLocaleCode());
             payPalNativeClient.launchNativeCheckout(this, request);
-             */
+
         }
     }
 
