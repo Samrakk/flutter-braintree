@@ -201,8 +201,8 @@ public class FlutterBraintreeCustom
         HashMap<String, Object> nonceMap = new HashMap<String, Object>();
         nonceMap.put("nonce", paymentMethodNonce.getString());
         nonceMap.put("isDefault", paymentMethodNonce.isDefault());
-        if (paymentMethodNonce instanceof PayPalAccountNonce) {
-            PayPalAccountNonce paypalAccountNonce = (PayPalAccountNonce) paymentMethodNonce;
+        if (paymentMethodNonce instanceof PayPalNativeCheckoutAccountNonce) {
+            PayPalNativeCheckoutAccountNonce paypalAccountNonce = (PayPalNativeCheckoutAccountNonce) paymentMethodNonce;
             nonceMap.put("paypalPayerId", paypalAccountNonce.getPayerId());
             nonceMap.put("typeLabel", "PayPal");
             nonceMap.put("description", paypalAccountNonce.getEmail());
