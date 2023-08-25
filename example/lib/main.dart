@@ -85,6 +85,9 @@ class _MyAppState extends State<MyApp> {
                   paypalRequest: BraintreePayPalRequest(
                     amount: '4.20',
                     displayName: 'Example company',
+                    currencyCode: '',
+                    billingAgreementDescription: '',
+                    localeCode: '',
                   ),
                   cardEnabled: true,
                 );
@@ -116,10 +119,12 @@ class _MyAppState extends State<MyApp> {
             ElevatedButton(
               onPressed: () async {
                 final request = BraintreePayPalRequest(
-                  amount: null,
+                  amount: 'null',
                   billingAgreementDescription:
                       'I hereby agree that flutter_braintree is great.',
                   displayName: 'Your Company',
+                  currencyCode: '',
+                  localeCode: '',
                 );
                 final result = await Braintree.requestPaypalNonce(
                   tokenizationKey,
@@ -133,7 +138,13 @@ class _MyAppState extends State<MyApp> {
             ),
             ElevatedButton(
               onPressed: () async {
-                final request = BraintreePayPalRequest(amount: '13.37');
+                final request = BraintreePayPalRequest(
+                  amount: '13.37',
+                  currencyCode: 'USD',
+                  displayName: '',
+                  billingAgreementDescription: '',
+                  localeCode: 'en_US',
+                );
                 final result = await Braintree.requestPaypalNonce(
                   tokenizationKey,
                   request,
