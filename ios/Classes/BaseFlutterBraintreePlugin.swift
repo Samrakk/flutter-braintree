@@ -38,6 +38,21 @@ open class BaseFlutterBraintreePlugin: NSObject {
         }
         return dict
     }
+
+        internal func buildPayPalPaymentNonceDict(nonce: BTPayPalNativeCheckoutAccountNonce?) -> [String: Any?] {
+            var dict = [String: Any?]()
+            dict["nonce"] = nonce?.nonce
+            dict["typeLabel"] = nonce?.type
+            dict["description"] = nonce?.nonce
+            dict["isDefault"] = nonce?.isDefault
+            if let paypalNonce = nonce as? BTPayPalAccountNonce {
+                dict["paypalPayerId"] = paypalNonce.payerID
+                dict["description"] = paypalNonce.email
+                dict["email"] = paypalNonce.email
+                dict["billingAddress"] = paypalNonce.billingAddress
+            }
+            return dict
+        }
     
     internal func returnAuthorizationMissingError (result: FlutterResult) {
         result(FlutterError(code: "braintree_error", message: "Authorization not specified (no clientToken or tokenizationKey)", details: nil))

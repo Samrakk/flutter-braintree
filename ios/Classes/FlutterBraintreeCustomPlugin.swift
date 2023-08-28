@@ -2,7 +2,6 @@ import Flutter
 import UIKit
 import Braintree
 import BraintreeDropIn
-import BraintreePayPalNativeCheckout
 
 public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPlugin, BTViewControllerPresentingDelegate {
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -29,7 +28,7 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
         let client = BTAPIClient(authorization: authorization)
         
         if call.method == "requestPaypalNonce" {
-            let driver = BTPayPalNativeCheckoutClient(apiClient: client)
+            let driver = BTPayPalNativeCheckoutClient(apiClient: client!)
             
             guard let requestInfo = dict(for: "request", in: call) else {
                 isHandlingResult = false
@@ -45,35 +44,27 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
                 if let intent = requestInfo["payPalPaymentIntent"] as? String {
                     switch intent {
                     case "order":
-                        paypalRequest.intent = BTPayPalRequestIntent.order
+                        paypalRequest.intent = BTPayPalNativeRequestIntent.order
                     case "sale":
-                        paypalRequest.intent = BTPayPalRequestIntent.sale
+                        paypalRequest.intent = BTPayPalNativeRequestIntent.sale
                     default:
-                        paypalRequest.intent = BTPayPalRequestIntent.authorize
-                    }
-                }
-                if let userAction = requestInfo["payPalPaymentUserAction"] as? String {
-                    switch userAction {
-                    case "commit":
-                        paypalRequest.userAction = BTPayPalRequestUserAction.commit
-                    default:
-                        paypalRequest.userAction = BTPayPalRequestUserAction.default
+                        paypalRequest.intent = BTPayPalNativeRequestIntent.authorize
                     }
                 }
                 print("#paypal if driver.tokenizePayPalAccount")
-              //  driver.tokenizePayPalAccount(with: paypalRequest) { (nonce, error) in
-              //      self.handleResult(nonce: nonce, error: error, flutterResult: result)
-              //      self.isHandlingResult = false
-              //  }
+                driver.tokenizePayPalAccount(with: paypalRequest) { (nonce, error) in
+                    self.handlePayPalResult(nonce: nonce, error: error, flutterResult: result)
+                    self.isHandlingResult = false
+                }
             } else {
                 let paypalRequest = BTPayPalNativeVaultRequest()
                 paypalRequest.displayName = requestInfo["displayName"] as? String
                 paypalRequest.billingAgreementDescription = requestInfo["billingAgreementDescription"] as? String
                 print("#paypal else driver.tokenizePayPalAccount")
-              //  driver.tokenizePayPalAccount(with: paypalRequest) { (nonce, error) in
-              //      self.handleResult(nonce: nonce, error: error, flutterResult: result)
-              //      self.isHandlingResult = false
-              //  }
+                driver.tokenizePayPalAccount(with: paypalRequest) { (nonce, error) in
+                    self.handlePayPalResult(nonce: nonce, error: error, flutterResult: result)
+                    self.isHandlingResult = false
+                }
             }
             
         } else if call.method == "tokenizeCreditCard" {
@@ -99,7 +90,6 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
     }
     
     private func handleResult(nonce: BTPaymentMethodNonce?, error: Error?, flutterResult: FlutterResult) {
-        print("#paypal handleResult")
         if error != nil {
             returnBraintreeError(result: flutterResult, error: error!)
         } else if nonce == nil {
@@ -108,6 +98,16 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
             flutterResult(buildPaymentNonceDict(nonce: nonce));
         }
     }
+
+        private func handlePayPalResult(nonce: BTPayPalNativeCheckoutAccountNonce?, error: Error?, flutterResult: FlutterResult) {
+            if error != nil {
+                returnBraintreeError(result: flutterResult, error: error!)
+            } else if nonce == nil {
+                flutterResult(nil)
+            } else {
+                flutterResult(buildPayPalPaymentNonceDict(nonce: nonce));
+            }
+        }
     
     public func paymentDriver(_ driver: Any, requestsPresentationOf viewController: UIViewController) {
         
