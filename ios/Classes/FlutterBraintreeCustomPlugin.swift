@@ -99,15 +99,15 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
         }
     }
 
-        private func handlePayPalResult(nonce: BTPayPalNativeCheckoutAccountNonce?, error: Error?, flutterResult: FlutterResult) {
-            if error != nil {
-                returnBraintreeError(result: flutterResult, error: error!)
-            } else if nonce == nil {
-                flutterResult(nil)
-            } else {
-                flutterResult(buildPayPalPaymentNonceDict(nonce: nonce));
-            }
+    private func handlePayPalResult(nonce: BTPayPalNativeCheckoutAccountNonce?, error: Error?, flutterResult: FlutterResult) {
+        if error != nil {
+            returnBraintreeError(result: flutterResult, error: error!)
+        } else if nonce == nil {
+            flutterResult(nil)
+        } else {
+            flutterResult(buildPayPalPaymentNonceDict(nonce: nonce));
         }
+    }
     
     public func paymentDriver(_ driver: Any, requestsPresentationOf viewController: UIViewController) {
         
