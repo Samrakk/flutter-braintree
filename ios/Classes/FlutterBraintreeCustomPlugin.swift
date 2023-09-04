@@ -28,6 +28,7 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
         let client = BTAPIClient(authorization: authorization)
         
         if call.method == "requestPaypalNonce" {
+            print("#paypal start")
             let driver = BTPayPalNativeCheckoutClient(apiClient: client!)
             
             guard let requestInfo = dict(for: "request", in: call) else {
@@ -36,11 +37,15 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
             }
             
             if let amount = requestInfo["amount"] as? String {
+                print("#paypal BTPayPalNativeCheckoutRequest")
                 let paypalRequest = BTPayPalNativeCheckoutRequest(amount: amount)
                 paypalRequest.currencyCode = requestInfo["currencyCode"] as? String
                 paypalRequest.displayName = requestInfo["displayName"] as? String
                 paypalRequest.billingAgreementDescription = requestInfo["billingAgreementDescription"] as? String
-                paypalRequest.isShippingAddressRequired = true
+                paypalRequest.isShippingAddressRequired = requestInfo["shippingAddressRequired"] as! Bool
+                paypalRequest.isShippingAddressEditable = requestInfo["shippingAddressEditable"] as! Bool
+                paypalRequest.localeCode = requestInfo["localeCode"] as? String
+                paypalRequest.merchantAccountID = requestInfo["merchantAccountId"] as? String
                 if let intent = requestInfo["payPalPaymentIntent"] as? String {
                     switch intent {
                     case "order":
@@ -57,10 +62,14 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
                     self.isHandlingResult = false
                 }
             } else {
+                print("#paypal BTPayPalNativeVaultRequest")
                 let paypalRequest = BTPayPalNativeVaultRequest()
                 paypalRequest.displayName = requestInfo["displayName"] as? String
                 paypalRequest.billingAgreementDescription = requestInfo["billingAgreementDescription"] as? String
-                print("#paypal else driver.tokenizePayPalAccount")
+                paypalRequest.isShippingAddressRequired = requestInfo["shippingAddressRequired"] as! Bool
+                paypalRequest.isShippingAddressEditable = requestInfo["shippingAddressEditable"] as! Bool
+                paypalRequest.localeCode = requestInfo["localeCode"] as? String
+                paypalRequest.merchantAccountID = requestInfo["merchantAccountId"] as? String
                 driver.tokenizePayPalAccount(with: paypalRequest) { (nonce, error) in
                     self.handlePayPalResult(nonce: nonce, error: error, flutterResult: result)
                     self.isHandlingResult = false
@@ -100,6 +109,7 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
     }
 
     private func handlePayPalResult(nonce: BTPayPalNativeCheckoutAccountNonce?, error: Error?, flutterResult: FlutterResult) {
+        print("#paypal: handlePayPalResult")
         if error != nil {
             returnBraintreeError(result: flutterResult, error: error!)
         } else if nonce == nil {

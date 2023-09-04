@@ -255,7 +255,7 @@ class BraintreePayPalRequest {
     this.shippingAddressRequired = false,
     this.shippingAddressEditable = false,
     this.payPalPaymentIntent = PayPalPaymentIntent.sale,
-    this.payPalPaymentUserAction = PayPalPaymentUserAction.commit,
+    this.payPalPaymentUserAction = PayPalPaymentUserAction.default_,
   });
 
   /// Amount of the transaction. If [amount] is `null`, PayPal will use the billing agreement (Vault) flow.
