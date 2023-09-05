@@ -28,7 +28,7 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
         let client = BTAPIClient(authorization: authorization)
         
         if call.method == "requestPaypalNonce" {
-            print("#paypal start")
+            debugPrint("#paypal start")
             let driver = BTPayPalNativeCheckoutClient(apiClient: client!)
             
             guard let requestInfo = dict(for: "request", in: call) else {
@@ -37,7 +37,7 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
             }
             
             if let amount = requestInfo["amount"] as? String {
-                print("#paypal BTPayPalNativeCheckoutRequest")
+                debugPrint("#paypal BTPayPalNativeCheckoutRequest")
                 let paypalRequest = BTPayPalNativeCheckoutRequest(amount: amount)
                 paypalRequest.currencyCode = requestInfo["currencyCode"] as? String
                 paypalRequest.displayName = requestInfo["displayName"] as? String
@@ -52,17 +52,19 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
                         paypalRequest.intent = BTPayPalNativeRequestIntent.order
                     case "sale":
                         paypalRequest.intent = BTPayPalNativeRequestIntent.sale
+                    case "authorize":
+                        paypalRequest.intent = BTPayPalNativeRequestIntent.authorize
                     default:
                         paypalRequest.intent = BTPayPalNativeRequestIntent.authorize
                     }
                 }
-                print("#paypal if driver.tokenizePayPalAccount")
+                debugPrint("#paypal if driver.tokenizePayPalAccount")
                 driver.tokenizePayPalAccount(with: paypalRequest) { (nonce, error) in
                     self.handlePayPalResult(nonce: nonce, error: error, flutterResult: result)
                     self.isHandlingResult = false
                 }
             } else {
-                print("#paypal BTPayPalNativeVaultRequest")
+                debugPrint("#paypal BTPayPalNativeVaultRequest")
                 let paypalRequest = BTPayPalNativeVaultRequest()
                 paypalRequest.displayName = requestInfo["displayName"] as? String
                 paypalRequest.billingAgreementDescription = requestInfo["billingAgreementDescription"] as? String
