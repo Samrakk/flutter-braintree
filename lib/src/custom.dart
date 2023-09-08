@@ -46,6 +46,18 @@ class Braintree {
     return BraintreePaymentMethodNonce.fromJson(result);
   }
 
+  static Future<BraintreePaymentMethodNonce?> requestCreditCardNonce(
+      String authorization,
+      BraintreeCreditCardRequest request,
+      ) async {
+    final result = await _kChannel.invokeMethod('tokenizeCreditCard', {
+      'authorization': authorization,
+      'request': request.toJson(),
+    });
+    if (result == null) return null;
+    return BraintreePaymentMethodNonce.fromJson(result);
+  }
+
   static Future<BraintreePaymentMethodNonce?> requestGooglePayment(
       String authorization,
       BraintreeGooglePaymentRequest request,) async {
