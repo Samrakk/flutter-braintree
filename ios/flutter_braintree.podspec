@@ -15,8 +15,10 @@ Pod::Spec.new do |s|
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  s.dependency 'BraintreeDropIn', '9.9.0'
-  s.dependency 'Braintree/PayPalNativeCheckout', '~> 5.23.0'
-  s.ios.deployment_target = '12.0'
+  # s.dependency 'BraintreeDropIn', '9.9.0'
+  s.dependency 'Braintree/PayPalNativeCheckout', '~> 6.6.0'
+  s.dependency 'Braintree/PayPal', '~> 6.6.0'
+  s.dependency 'Braintree/ApplePay', '~> 6.6.0'
+  s.ios.deployment_target = '13.0'
   s.swift_version = '5.0'
 end
