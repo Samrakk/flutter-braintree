@@ -44,28 +44,26 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
             
             if let amount = requestInfo["amount"] as? String {
                 debugPrint("#paypal BTPayPalNativeCheckoutRequest")
-                let paypalRequest = BTPayPalNativeCheckoutRequest(amount: "20.35")
-                paypalRequest.currencyCode = "USD"
-                paypalRequest.intent = BTPayPalRequestIntent.sale
-                // paypalRequest.currencyCode = requestInfo["currencyCode"] as? String
+                let paypalRequest = BTPayPalNativeCheckoutRequest(amount: amount)
+                 paypalRequest.currencyCode = requestInfo["currencyCode"] as? String
                  paypalRequest.displayName = requestInfo["displayName"] as? String
-                // paypalRequest.billingAgreementDescription = requestInfo["billingAgreementDescription"] as? String
-                // paypalRequest.isShippingAddressRequired = requestInfo["shippingAddressRequired"] as! Bool
-                // paypalRequest.isShippingAddressEditable = requestInfo["shippingAddressEditable"] as! Bool
+                 paypalRequest.billingAgreementDescription = requestInfo["billingAgreementDescription"] as? String
+                 paypalRequest.isShippingAddressRequired = requestInfo["shippingAddressRequired"] as! Bool
+                 paypalRequest.isShippingAddressEditable = requestInfo["shippingAddressEditable"] as! Bool
                  paypalRequest.localeCode = BTPayPalLocaleCode.en_US
-                // paypalRequest.merchantAccountID = requestInfo["merchantAccountId"] as? String
-                // if let intent = requestInfo["payPalPaymentIntent"] as? String {
-                //     switch intent {
-                //     case "order":
-                //         paypalRequest.intent = BTPayPalRequestIntent.order
-                //     case "sale":
-                //         paypalRequest.intent = BTPayPalRequestIntent.sale
-                //     case "authorize":
-                //         paypalRequest.intent = BTPayPalRequestIntent.authorize
-                //     default:
-                //         paypalRequest.intent = BTPayPalRequestIntent.authorize
-                //     }
-                // }
+                 paypalRequest.merchantAccountID = requestInfo["merchantAccountId"] as? String
+                 if let intent = requestInfo["payPalPaymentIntent"] as? String {
+                     switch intent {
+                     case "order":
+                         paypalRequest.intent = BTPayPalRequestIntent.order
+                     case "sale":
+                         paypalRequest.intent = BTPayPalRequestIntent.sale
+                     case "authorize":
+                         paypalRequest.intent = BTPayPalRequestIntent.authorize
+                     default:
+                         paypalRequest.intent = BTPayPalRequestIntent.authorize
+                     }
+                 }
                 debugPrint("#paypal if driver.tokenizePayPalAccount")
                 driver?.tokenize(paypalRequest) { payPalNativeCheckoutNonce, error in
                     debugPrint("driver.tokenize(paypalRequest)")
@@ -73,11 +71,6 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
                     self.isHandlingResult = false
                     self.driver = nil
                 }
-//                driver.tokenize(paypalRequest) { (nonce, error) in
-//                    debugPrint("driver.tokenize(paypalRequest)")
-//                     self.handlePayPalResult(nonce: nonce, error: error, flutterResult: result)
-//                     self.isHandlingResult = false
-//                }
             }
             
         }
