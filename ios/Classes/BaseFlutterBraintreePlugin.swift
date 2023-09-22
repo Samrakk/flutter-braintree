@@ -38,13 +38,13 @@ open class BaseFlutterBraintreePlugin: NSObject {
         return dict
     }
 
-        internal func buildPayPalPaymentNonceDict(nonce: BTPayPalNativeCheckoutAccountNonce?) -> [String: Any?] {
+        internal func buildPayPalPaymentNonceDict(nonce: BTPayPalNativeCheckoutAccountNonce) -> [String: Any?] {
             var dict = [String: Any?]()
-            dict["nonce"] = nonce?.nonce
-            dict["typeLabel"] = nonce?.type
-            dict["description"] = nonce?.nonce
-            dict["isDefault"] = nonce?.isDefault
-            if let paypalNonce = nonce as? BTPayPalAccountNonce {
+            dict["nonce"] = nonce.nonce
+            dict["typeLabel"] = nonce.type
+            dict["description"] = nonce.nonce
+            dict["isDefault"] = nonce.isDefault
+            if let paypalNonce = nonce as BTPayPalNativeCheckoutAccountNonce? {
                 dict["paypalPayerId"] = paypalNonce.payerID
                 dict["description"] = paypalNonce.email
                 dict["email"] = paypalNonce.email

@@ -99,7 +99,7 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
         } else if nonce == nil {
             flutterResult(nil)
         } else {
-            flutterResult(buildPayPalPaymentNonceDict(nonce: nonce));
+            flutterResult(buildPayPalPaymentNonceDict(nonce: nonce!));
         }
     }
     
