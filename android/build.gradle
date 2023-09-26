@@ -30,12 +30,12 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdk 31
+    compileSdk 34
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 23
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        targetSdk 31
+        targetSdk 34
         signingConfig signingConfigs.debug
     }
     lintOptions {
@@ -55,6 +55,9 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.braintreepayments.api:paypal:4.38.0'
     implementation 'com.braintreepayments.api:paypal-native-checkout:4.38.0'
+    implementation 'com.braintreepayments.api:three-d-secure:4.38.0'
+    implementation 'com.braintreepayments.api:venmo:4.38.0'
+
     components.all {
         allVariants {
             withDependencies { deps ->

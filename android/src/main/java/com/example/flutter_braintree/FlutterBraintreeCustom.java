@@ -120,17 +120,6 @@ public class FlutterBraintreeCustom
         Intent intent = getIntent();
         if (intent.getStringExtra("amount") == null) {
             // Vault flow
-            /*
-            PayPalVaultRequest request = new PayPalVaultRequest();
-            request.setDisplayName(intent.getStringExtra("displayName"));
-            request.setLocaleCode(intent.getStringExtra("localeCode"));
-            request.setBillingAgreementDescription(intent.getStringExtra("billingAgreementDescription"));
-            request.setShippingAddressRequired(intent.getBooleanExtra("shippingAddressRequired", false));
-            request.setShippingAddressEditable(intent.getBooleanExtra("shippingAddressEditable", false));
-            request.setMerchantAccountId(intent.getStringExtra("merchantAccountId"));
-            payPalClient.tokenizePayPalAccount(this, request);
-            */
-
             PayPalNativeCheckoutVaultRequest request = new PayPalNativeCheckoutVaultRequest();
             request.setDisplayName(intent.getStringExtra("displayName"));
             request.setBillingAgreementDescription(intent.getStringExtra("billingAgreementDescription"));
@@ -142,21 +131,6 @@ public class FlutterBraintreeCustom
             payPalNativeClient.launchNativeCheckout(this, request);
 
         } else {
-            /*
-            PayPalCheckoutRequest request = new PayPalCheckoutRequest(intent.getStringExtra("amount"));
-            request.setCurrencyCode(intent.getStringExtra("currencyCode"));
-            request.setDisplayName(intent.getStringExtra("displayName") + "_paypal_test");
-            request.setLocaleCode(intent.getStringExtra("localeCode"));
-            request.setBillingAgreementDescription(intent.getStringExtra("billingAgreementDescription"));
-            request.setShippingAddressRequired(intent.getBooleanExtra("shippingAddressRequired", false));
-            request.setShippingAddressEditable(intent.getBooleanExtra("shippingAddressEditable", false));
-            request.setMerchantAccountId(intent.getStringExtra("merchantAccountId"));
-            request.setIntent(PayPalPaymentIntent.SALE);
-            request.setUserAction(PayPalCheckoutRequest.USER_ACTION_COMMIT);
-            System.out.println("amount :"+request.getAmount()+"\n localcode :"+request.getLocaleCode());
-            payPalClient.tokenizePayPalAccount(this, request);
-            */
-
             PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest(intent.getStringExtra("amount"));
             request.setCurrencyCode(intent.getStringExtra("currencyCode"));
             request.setDisplayName(intent.getStringExtra("displayName") + "_paypal_test");
