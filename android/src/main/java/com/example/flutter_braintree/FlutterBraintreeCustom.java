@@ -165,7 +165,10 @@ public class FlutterBraintreeCustom
             request.setShippingAddressRequired(intent.getBooleanExtra("shippingAddressRequired", false));
             request.setShippingAddressEditable(intent.getBooleanExtra("shippingAddressEditable", false));
             request.setMerchantAccountId(intent.getStringExtra("merchantAccountId"));
-            request.setReturnUrl(intent.getStringExtra("returnURL"));
+            request.setReturnUrl("samet.hello.me");
+            request.setIntent(PayPalNativeCheckoutPaymentIntent.ORDER);
+            request.setUserAction(PayPalNativeCheckoutRequest.USER_ACTION_COMMIT);
+            /*
             switch (intent.getStringExtra("payPalPaymentIntent")){
                 case PayPalNativeCheckoutPaymentIntent.SALE:
                     request.setIntent(PayPalNativeCheckoutPaymentIntent.SALE);
@@ -186,6 +189,8 @@ public class FlutterBraintreeCustom
                     request.setUserAction(PayPalNativeCheckoutRequest.USER_ACTION_DEFAULT);
                     break;
             }
+
+             */
             System.out.println("payPalPaymentUserAction (come) :" + intent.getStringExtra("payPalPaymentUserAction"));
             System.out.println("payPalPaymentUserAction ():" + request.getUserAction());
             System.out.println("payPalPaymentIntent :" + request.getIntent());
