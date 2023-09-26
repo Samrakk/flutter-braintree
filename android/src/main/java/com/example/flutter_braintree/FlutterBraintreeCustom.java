@@ -166,9 +166,31 @@ public class FlutterBraintreeCustom
             request.setShippingAddressEditable(intent.getBooleanExtra("shippingAddressEditable", false));
             request.setMerchantAccountId(intent.getStringExtra("merchantAccountId"));
             request.setReturnUrl(intent.getStringExtra("returnURL"));
-            request.setIntent(PayPalNativeCheckoutPaymentIntent.SALE);
-            request.setUserAction(PayPalNativeCheckoutRequest.USER_ACTION_COMMIT);
-            System.out.println("amount :" + request.getAmount() + "\n localcode :" + request.getLocaleCode());
+            switch (intent.getStringExtra("payPalPaymentIntent")){
+                case PayPalNativeCheckoutPaymentIntent.SALE:
+                    request.setIntent(PayPalNativeCheckoutPaymentIntent.SALE);
+                    break;
+                case PayPalNativeCheckoutPaymentIntent.AUTHORIZE:
+                    request.setIntent(PayPalNativeCheckoutPaymentIntent.AUTHORIZE);
+                    break;
+                case PayPalNativeCheckoutPaymentIntent.ORDER:
+                    request.setIntent(PayPalNativeCheckoutPaymentIntent.ORDER);
+                    break;
+            }
+
+            switch (intent.getStringExtra("payPalPaymentUserAction")){
+                case "commit":
+                    request.setUserAction(PayPalNativeCheckoutRequest.USER_ACTION_COMMIT);
+                    break;
+                case "default_":
+                    request.setUserAction(PayPalNativeCheckoutRequest.USER_ACTION_DEFAULT);
+                    break;
+            }
+            System.out.println("payPalPaymentUserAction (come) :" + intent.getStringExtra("payPalPaymentUserAction"));
+            System.out.println("payPalPaymentUserAction ():" + request.getUserAction());
+            System.out.println("payPalPaymentIntent :" + request.getIntent());
+            System.out.println("amount :" + request.getAmount());
+            System.out.println("localcode :" + request.getLocaleCode());
             payPalNativeClient.launchNativeCheckout(this, request);
 
         }

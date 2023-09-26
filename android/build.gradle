@@ -49,12 +49,12 @@ android {
 }
 
 dependencies {
-    implementation 'com.braintreepayments.api:drop-in:6.10.0'
-    implementation 'com.google.android.gms:play-services-wallet:19.2.0'
+    implementation 'com.braintreepayments.api:drop-in:6.13.0'
+    implementation 'com.google.android.gms:play-services-wallet:19.2.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.braintreepayments.api:paypal:4.37.0'
-    implementation 'com.braintreepayments.api:paypal-native-checkout:4.37.0'
+    implementation 'com.braintreepayments.api:paypal:4.38.0'
+    implementation 'com.braintreepayments.api:paypal-native-checkout:4.38.0'
     components.all {
         allVariants {
             withDependencies { deps ->

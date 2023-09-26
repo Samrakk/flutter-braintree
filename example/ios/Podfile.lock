@@ -1,41 +1,23 @@
 PODS:
-  - Braintree/ApplePay (5.23.0):
+  - Braintree/ApplePay (6.6.0):
     - Braintree/Core
-  - Braintree/Card (5.23.0):
+  - Braintree/Core (6.6.0)
+  - Braintree/DataCollector (6.6.0):
     - Braintree/Core
-  - Braintree/Core (5.23.0)
-  - Braintree/PaymentFlow (5.23.0):
+  - Braintree/PayPal (6.6.0):
     - Braintree/Core
-    - Braintree/PayPalDataCollector
-  - Braintree/PayPal (5.23.0):
-    - Braintree/Core
-    - Braintree/PayPalDataCollector
-  - Braintree/PayPalDataCollector (5.23.0)
-  - Braintree/PayPalNativeCheckout (5.23.0):
+    - Braintree/DataCollector
+  - Braintree/PayPalNativeCheckout (6.6.0):
     - Braintree/Core
     - Braintree/PayPal
-    - PayPalCheckout (= 0.110.0)
-  - Braintree/ThreeDSecure (5.23.0):
-    - Braintree/Card
-    - Braintree/PaymentFlow
-  - Braintree/UnionPay (5.23.0):
-    - Braintree/Card
-  - Braintree/Venmo (5.23.0):
-    - Braintree/Core
-  - BraintreeDropIn (9.9.0):
-    - Braintree/ApplePay (~> 5.19)
-    - Braintree/Card (~> 5.19)
-    - Braintree/Core (~> 5.19)
-    - Braintree/PayPal (~> 5.19)
-    - Braintree/ThreeDSecure (~> 5.19)
-    - Braintree/UnionPay (~> 5.19)
-    - Braintree/Venmo (~> 5.19)
+    - PayPalCheckout (= 1.1.0)
   - Flutter (1.0.0)
   - flutter_braintree (2.0.0):
-    - Braintree/PayPalNativeCheckout (~> 5.23.0)
-    - BraintreeDropIn (= 9.9.0)
+    - Braintree/ApplePay (~> 6.6.0)
+    - Braintree/PayPal (~> 6.6.0)
+    - Braintree/PayPalNativeCheckout (~> 6.6.0)
     - Flutter
-  - PayPalCheckout (0.110.0)
+  - PayPalCheckout (1.1.0)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -44,7 +26,6 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - Braintree
-    - BraintreeDropIn
     - PayPalCheckout
 
 EXTERNAL SOURCES:
@@ -54,11 +35,10 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_braintree/ios"
 
 SPEC CHECKSUMS:
-  Braintree: fcbdb324318cdf0562719c4d5629cdf71f29c220
-  BraintreeDropIn: 6efa685908f42bf3a43072757fac137e03d3ffd7
+  Braintree: 69b41260af473d8d9bad1d74576fd021954a750a
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  flutter_braintree: b8932196cfe5afb08fee1e259ffd0cff0387a53a
-  PayPalCheckout: 91b3b728e2bfff22ecffcafcf374574b760f52f9
+  flutter_braintree: 21654f23c3c220ceb7f6ac218919442740ad685b
+  PayPalCheckout: ec442f9026c4ec6eee58f768b3cfd81c0ff569bf
 
 PODFILE CHECKSUM: 7d6f6f687ae4a692b0eeac1dbcf5093d6fd43119
 

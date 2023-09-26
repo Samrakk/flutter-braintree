@@ -91,15 +91,13 @@ public class FlutterBraintreeCustomPlugin: BaseFlutterBraintreePlugin, FlutterPl
     }
 
     private func handlePayPalResult(nonce: BTPayPalNativeCheckoutAccountNonce?, error: Error?, flutterResult: FlutterResult) {
-        print("Error: \(error?.localizedDescription)")
         print("#paypal: handlePayPalResult")
-        print(nonce?.email)
         if error != nil {
             returnBraintreeError(result: flutterResult, error: error!)
         } else if nonce == nil {
             flutterResult(nil)
         } else {
-            flutterResult(buildPayPalPaymentNonceDict(nonce: nonce!));
+            flutterResult(buildPayPalPaymentNonceDict(nonce: nonce))
         }
     }
     

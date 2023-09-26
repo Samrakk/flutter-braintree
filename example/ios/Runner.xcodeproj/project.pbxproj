@@ -213,19 +213,13 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Braintree/Braintree.framework",
-				"${BUILT_PRODUCTS_DIR}/BraintreeDropIn/BraintreeDropIn.framework",
 				"${BUILT_PRODUCTS_DIR}/flutter_braintree/flutter_braintree.framework",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Braintree/PayPalDataCollector/PPRiskMagnes.framework/PPRiskMagnes",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/Braintree/ThreeDSecure/CardinalMobile.framework/CardinalMobile",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/PayPalCheckout/PayPalCheckout.framework/PayPalCheckout",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Braintree.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BraintreeDropIn.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/flutter_braintree.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PPRiskMagnes.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CardinalMobile.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PayPalCheckout.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -130,26 +130,9 @@ public class FlutterBraintreeDropInPlugin: BaseFlutterBraintreePlugin, FlutterPl
     //     }
     // }
     
-    private func handleApplePayResult(payment: PKPayment, result: BTPaymentMethodNonce, flutterResult: FlutterResult) {
-        var baseNonce = buildPaymentNonceDict(nonce: result)
-        var name = payment.billingContact?.name?.givenName ?? "";
-        name += " ";
-        name += payment.billingContact?.name?.familyName ?? "";
-        baseNonce["billingAddress"] = [
-            "givenName": payment.billingContact?.name?.givenName ?? "",
-            "surname": payment.billingContact?.name?.familyName ?? "",
-            "recipientName": name ?? "",
-            "phoneNumber": payment.shippingContact?.phoneNumber?.stringValue,
-            "streetAddress": payment.billingContact?.postalAddress?.street,
-            "extendedAddress": "",
-            "locality": payment.billingContact?.postalAddress?.city,
-            "region": payment.billingContact?.postalAddress?.state,
-            "postalCode": payment.billingContact?.postalAddress?.postalCode,
-            "countryCodeAlpha2": payment.billingContact?.postalAddress?.isoCountryCode,
-        ]
-        baseNonce["email"] = payment.shippingContact?.emailAddress;
+    private func handleApplePayResult(payment: PKPayment, nonce: BTPaymentMethodNonce, flutterResult: FlutterResult) {
         flutterResult([
-            "paymentMethodNonce": baseNonce
+            "paymentMethodNonce": buildPaymentNonceDict(nonce: nonce, payment: payment)
         ])
     }
 }
@@ -172,7 +155,7 @@ extension FlutterBraintreeDropInPlugin: PKPaymentAuthorizationViewControllerDele
             }
             
             //print(paymentMethod.nonce)
-            self.handleApplePayResult(payment: payment, result: paymentMethod, flutterResult: self.completionBlock)
+            self.handleApplePayResult(payment: payment, nonce: paymentMethod, flutterResult: self.completionBlock)
             completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
         }
     }
@@ -188,7 +171,7 @@ extension FlutterBraintreeDropInPlugin: PKPaymentAuthorizationViewControllerDele
             }
             
             //print(paymentMethod.nonce)
-            self.handleApplePayResult(payment: payment, result: paymentMethod, flutterResult: self.completionBlock)
+            self.handleApplePayResult(payment: payment, nonce: paymentMethod, flutterResult: self.completionBlock)
             completion(.success)
         }
     }
