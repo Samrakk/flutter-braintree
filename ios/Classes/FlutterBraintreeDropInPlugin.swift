@@ -1,7 +1,6 @@
 import Flutter
 import UIKit
 import Braintree
-import BraintreeDropIn
 import PassKit
 
 func makePaymentSummaryItems(from: Dictionary<String, Any>) -> [PKPaymentSummaryItem]? {
@@ -29,7 +28,7 @@ func makePaymentSummaryItems(from: Dictionary<String, Any>) -> [PKPaymentSummary
     return outList;
 }
 
-public class FlutterBraintreeDropInPlugin: BaseFlutterBraintreePlugin, FlutterPlugin, BTThreeDSecureRequestDelegate {
+public class FlutterBraintreeDropInPlugin: BaseFlutterBraintreePlugin, FlutterPlugin {
     
 
     
@@ -37,9 +36,9 @@ public class FlutterBraintreeDropInPlugin: BaseFlutterBraintreePlugin, FlutterPl
     private var applePayInfo = [String : Any]()
     private var authorization: String!
     
-    public func onLookupComplete(_ request: BTThreeDSecureRequest, lookupResult result: BTThreeDSecureResult, next: @escaping () -> Void) {
-        next();
-    }
+    // public func onLookupComplete(_ request: BTThreeDSecureRequest, lookupResult result: BTThreeDSecureResult, next: @escaping () -> Void) {
+    //     next();
+    // }
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "flutter_braintree.drop_in", binaryMessenger: registrar.messenger())
@@ -51,112 +50,7 @@ public class FlutterBraintreeDropInPlugin: BaseFlutterBraintreePlugin, FlutterPl
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         completionBlock = result
         
-        if call.method == "start" {
-            guard !isHandlingResult else {
-                returnAlreadyOpenError(result: result)
-                return
-            }
-            
-            isHandlingResult = true
-            
-            let threeDSecureRequest = BTThreeDSecureRequest()
-
-            if let email = string(for: "email", in: call) {
-                threeDSecureRequest.email = email
-            }
-            threeDSecureRequest.versionRequested = .version2
-
-            if let billingAddress = dict(for: "billingAddress", in: call) {
-                let address = BTThreeDSecurePostalAddress()
-                address.givenName = billingAddress["givenName"] as? String;
-                address.surname = billingAddress["surname"] as? String;
-                address.phoneNumber = billingAddress["phoneNumber"] as? String;
-                address.streetAddress = billingAddress["streetAddress"] as? String;
-                address.extendedAddress = billingAddress["extendedAddress"] as? String;
-                address.locality = billingAddress["locality"] as? String;
-                address.region = billingAddress["region"] as? String;
-                address.postalCode = billingAddress["postalCode"] as? String;
-                address.countryCodeAlpha2 = billingAddress["countryCodeAlpha2"] as? String;
-                threeDSecureRequest.billingAddress = address
-
-                // Optional additional information.
-                // For best results, provide as many of these elements as possible.
-                let info = BTThreeDSecureAdditionalInformation()
-                info.shippingAddress = address
-                threeDSecureRequest.additionalInformation = info
-            }
-            
-            let dropInRequest = BTDropInRequest()
-            
-            if let amount = string(for: "amount", in: call) {
-                threeDSecureRequest.threeDSecureRequestDelegate = self
-                threeDSecureRequest.amount = NSDecimalNumber(string: amount)
-                dropInRequest.threeDSecureRequest = threeDSecureRequest
-            }
-
-            var deviceData: String?
-            if let collectDeviceData = bool(for: "collectDeviceData", in: call), collectDeviceData {
-                deviceData = PPDataCollector.collectPayPalDeviceData()
-            }
-            
-            if let vaultManagerEnabled = bool(for: "vaultManagerEnabled", in: call) {
-                dropInRequest.vaultManager = vaultManagerEnabled
-            }
-            
-            if let cardEnabled = bool(for: "cardEnabled", in: call) {
-                dropInRequest.cardDisabled = !cardEnabled
-            }
-
-            if let paypalEnabled = bool(for: "paypalEnabled", in: call) {
-                dropInRequest.paypalDisabled = !paypalEnabled
-            }
-
-            if let paypalInfo = dict(for: "paypalRequest", in: call) {
-                if let amount = paypalInfo["amount"] as? String {
-                    let paypalRequest = BTPayPalCheckoutRequest(amount: amount)
-                    paypalRequest.currencyCode = paypalInfo["currencyCode"] as? String
-                    paypalRequest.displayName = paypalInfo["displayName"] as? String
-                    paypalRequest.billingAgreementDescription = paypalInfo["billingAgreementDescription"] as? String
-                    dropInRequest.payPalRequest = paypalRequest
-                } else {
-                    let paypalRequest = BTPayPalVaultRequest()
-                    paypalRequest.displayName = paypalInfo["displayName"] as? String
-                    paypalRequest.billingAgreementDescription = paypalInfo["billingAgreementDescription"] as? String
-                    dropInRequest.payPalRequest = paypalRequest
-                }
-            } else {
-                dropInRequest.paypalDisabled = true
-            }
-            
-            if let applePayInfo = dict(for: "applePayRequest", in: call) {
-                self.applePayInfo = applePayInfo
-            } else {
-                dropInRequest.applePayDisabled = true
-            }
-            
-            guard let authorization = getAuthorization(call: call) else {
-                returnAuthorizationMissingError(result: result)
-                isHandlingResult = false
-                return
-            }
-            
-            self.authorization = authorization
-            
-            let dropInController = BTDropInController(authorization: authorization, request: dropInRequest) { (controller, braintreeResult, error) in
-                controller.dismiss(animated: true, completion: nil)
-                
-                self.handleResult(result: braintreeResult, error: error, flutterResult: result, deviceData: deviceData)
-                self.isHandlingResult = false
-            }
-            
-            guard let existingDropInController = dropInController else {
-                result(FlutterError(code: "braintree_error", message: "BTDropInController not initialized (no API key or request specified?)", details: nil))
-                isHandlingResult = false
-                return
-            }
-                
-            UIApplication.shared.keyWindow?.rootViewController?.present(existingDropInController, animated: true, completion: nil)
-        } else if call.method == "startApplePay" {
+        if call.method == "startApplePay" {
 
             if let applePayInfo = dict(for: "applePayRequest", in: call) {
                 self.applePayInfo = applePayInfo
@@ -222,40 +116,23 @@ public class FlutterBraintreeDropInPlugin: BaseFlutterBraintreePlugin, FlutterPl
         UIApplication.shared.keyWindow?.rootViewController?.present(applePayController, animated: true, completion: nil)
     }
     
-    private func handleResult(result: BTDropInResult?, error: Error?, flutterResult: FlutterResult, deviceData: String?) {
-        if error != nil {
-            returnBraintreeError(result: flutterResult, error: error!)
-        } else if result?.isCanceled ?? false {
-            flutterResult(nil)
-        } else {
-            if let result = result, result.paymentMethodType == .applePay {
-                setupApplePay(flutterResult: flutterResult)
-            } else {
-                flutterResult(["paymentMethodNonce": buildPaymentNonceDict(nonce: result?.paymentMethod), "deviceData": deviceData])
-            }
-        }
-    }
+    // private func handleResult(result: BTDropInResult?, error: Error?, flutterResult: FlutterResult, deviceData: String?) {
+    //     if error != nil {
+    //         returnBraintreeError(result: flutterResult, error: error!)
+    //     } else if result?.isCanceled ?? false {
+    //         flutterResult(nil)
+    //     } else {
+    //         if let result = result, result.paymentMethodType == .applePay {
+    //             setupApplePay(flutterResult: flutterResult)
+    //         } else {
+    //             flutterResult(["paymentMethodNonce": buildPaymentNonceDict(nonce: result?.paymentMethod), "deviceData": deviceData])
+    //         }
+    //     }
+    // }
     
-    private func handleApplePayResult(payment: PKPayment, result: BTPaymentMethodNonce, flutterResult: FlutterResult) {
-        var baseNonce = buildPaymentNonceDict(nonce: result)
-        var name = payment.billingContact?.name?.givenName ?? "";
-        name += " ";
-        name += payment.billingContact?.name?.familyName ?? "";
-        baseNonce["billingAddress"] = [
-            "givenName": payment.billingContact?.name?.givenName ?? "",
-            "surname": payment.billingContact?.name?.familyName ?? "",
-            "recipientName": name ?? "",
-            "phoneNumber": payment.shippingContact?.phoneNumber?.stringValue,
-            "streetAddress": payment.billingContact?.postalAddress?.street,
-            "extendedAddress": "",
-            "locality": payment.billingContact?.postalAddress?.city,
-            "region": payment.billingContact?.postalAddress?.state,
-            "postalCode": payment.billingContact?.postalAddress?.postalCode,
-            "countryCodeAlpha2": payment.billingContact?.postalAddress?.isoCountryCode,
-        ]
-        baseNonce["email"] = payment.shippingContact?.emailAddress;
+    private func handleApplePayResult(payment: PKPayment, nonce: BTPaymentMethodNonce, flutterResult: FlutterResult) {
         flutterResult([
-            "paymentMethodNonce": baseNonce
+            "paymentMethodNonce": buildPaymentNonceDict(nonce: nonce, payment: payment)
         ])
     }
 }
@@ -271,14 +148,14 @@ extension FlutterBraintreeDropInPlugin: PKPaymentAuthorizationViewControllerDele
         guard let apiClient = BTAPIClient(authorization: authorization) else { return }
         let applePayClient = BTApplePayClient(apiClient: apiClient)
         
-        applePayClient.tokenizeApplePay(payment) { (tokenizedPaymentMethod, error) in
+        applePayClient.tokenize(payment) { (tokenizedPaymentMethod, error) in
             guard let paymentMethod = tokenizedPaymentMethod, error == nil else {
                 completion(PKPaymentAuthorizationResult(status: .failure, errors: nil))
                 return
             }
             
             //print(paymentMethod.nonce)
-            self.handleApplePayResult(payment: payment, result: paymentMethod, flutterResult: self.completionBlock)
+            self.handleApplePayResult(payment: payment, nonce: paymentMethod, flutterResult: self.completionBlock)
             completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
         }
     }
@@ -287,14 +164,14 @@ extension FlutterBraintreeDropInPlugin: PKPaymentAuthorizationViewControllerDele
         guard let apiClient = BTAPIClient(authorization: authorization) else { return }
         let applePayClient = BTApplePayClient(apiClient: apiClient)
         
-        applePayClient.tokenizeApplePay(payment) { (tokenizedPaymentMethod, error) in
+        applePayClient.tokenize(payment) { (tokenizedPaymentMethod, error) in
             guard let paymentMethod = tokenizedPaymentMethod, error == nil else {
                 completion(.failure)
                 return
             }
             
             //print(paymentMethod.nonce)
-            self.handleApplePayResult(payment: payment, result: paymentMethod, flutterResult: self.completionBlock)
+            self.handleApplePayResult(payment: payment, nonce: paymentMethod, flutterResult: self.completionBlock)
             completion(.success)
         }
     }

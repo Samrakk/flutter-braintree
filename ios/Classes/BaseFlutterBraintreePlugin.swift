@@ -1,7 +1,7 @@
 import Foundation
+import PassKit
 import Flutter
 import Braintree
-import BraintreeDropIn
 
 open class BaseFlutterBraintreePlugin: NSObject {
     internal var isHandlingResult = false;
@@ -23,13 +23,13 @@ open class BaseFlutterBraintreePlugin: NSObject {
 
         return authorization
     }
-
+    
     internal func buildPaymentNonceDict(nonce: BTPaymentMethodNonce?) -> [String: Any?] {
         var dict = [String: Any?]()
         dict["nonce"] = nonce?.nonce
         dict["typeLabel"] = nonce?.type
-        dict["description"] = nonce?.nonce
         dict["isDefault"] = nonce?.isDefault
+        dict["description"] = nonce?.nonce
         if let paypalNonce = nonce as? BTPayPalAccountNonce {
             dict["paypalPayerId"] = paypalNonce.payerID
             dict["description"] = paypalNonce.email
@@ -39,20 +39,72 @@ open class BaseFlutterBraintreePlugin: NSObject {
         return dict
     }
 
-        internal func buildPayPalPaymentNonceDict(nonce: BTPayPalNativeCheckoutAccountNonce?) -> [String: Any?] {
-            var dict = [String: Any?]()
-            dict["nonce"] = nonce?.nonce
-            dict["typeLabel"] = nonce?.type
-            dict["description"] = nonce?.nonce
-            dict["isDefault"] = nonce?.isDefault
-            if let paypalNonce = nonce as? BTPayPalAccountNonce {
-                dict["paypalPayerId"] = paypalNonce.payerID
-                dict["description"] = paypalNonce.email
-                dict["email"] = paypalNonce.email
-                dict["billingAddress"] = paypalNonce.billingAddress
-            }
-            return dict
-        }
+    internal func buildPaymentNonceDict(nonce: BTPaymentMethodNonce?, payment: PKPayment) -> [String: Any?] {
+        var dict = [String: Any?]()
+        dict["nonce"] = nonce?.nonce
+        dict["typeLabel"] = nonce?.type
+        dict["isDefault"] = nonce?.isDefault
+        dict["description"] = nonce?.nonce
+        dict["email"] = payment.shippingContact?.emailAddress
+        dict["billingAddress"] = getAddressMap(
+            firstName: payment.billingContact?.name?.givenName ?? "",
+            lastName: payment.billingContact?.name?.familyName ?? "",
+            phoneNumber: payment.shippingContact?.phoneNumber?.stringValue,
+            streetAddress: payment.billingContact?.postalAddress?.street,
+            locality: payment.billingContact?.postalAddress?.city,
+            region: payment.billingContact?.postalAddress?.state,
+            postalCode: payment.billingContact?.postalAddress?.postalCode,
+            countryCodeAlpha2: payment.billingContact?.postalAddress?.isoCountryCode
+        )
+        return dict
+    }
+
+    internal func buildPayPalPaymentNonceDict(nonce: BTPayPalNativeCheckoutAccountNonce?) -> [String: Any?] {
+        var dict = [String: Any?]()
+        dict["nonce"] = nonce?.nonce
+        dict["typeLabel"] = nonce?.type
+        dict["isDefault"] = nonce?.isDefault
+        dict["description"] = nonce?.email
+        dict["email"] = nonce?.email
+        dict["paypalPayerId"] = nonce?.payerID
+        dict["billingAddress"] = getAddressMap(
+            firstName: nonce?.firstName,
+            lastName: nonce?.lastName,
+            phoneNumber: nonce?.phone,
+            streetAddress: nonce?.billingAddress?.streetAddress,
+            locality: nonce?.billingAddress?.locality,
+            region: nonce?.billingAddress?.region,
+            postalCode: nonce?.billingAddress?.postalCode,
+            countryCodeAlpha2: nonce?.billingAddress?.countryCodeAlpha2
+        )
+
+        return dict
+    }
+    
+    internal func getAddressMap(firstName:String?,
+                          lastName:String?,
+                          phoneNumber:String?,
+                          streetAddress:String?,
+                          locality:String?,
+                          region:String?,
+                          postalCode:String?,
+                          countryCodeAlpha2:String?
+    )-> [String: Any?] {
+        var name = (firstName ?? " ") + " " + (lastName ?? " ");
+        return [
+            "givenName": firstName,
+            "surname": lastName,
+            "recipientName": name,
+            "phoneNumber": phoneNumber,
+            "streetAddress": streetAddress,
+            "extendedAddress": "",
+            "locality": locality,
+            "region": region,
+            "postalCode": postalCode,
+            "countryCodeAlpha2": countryCodeAlpha2,
+        ];
+    }
+    
     
     internal func returnAuthorizationMissingError (result: FlutterResult) {
         result(FlutterError(code: "braintree_error", message: "Authorization not specified (no clientToken or tokenizationKey)", details: nil))
