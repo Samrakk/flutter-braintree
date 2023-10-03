@@ -19,6 +19,6 @@ Pod::Spec.new do |s|
   s.dependency 'Braintree/PayPalNativeCheckout', '~> 6.6.0'
   s.dependency 'Braintree/PayPal', '~> 6.6.0'
   s.dependency 'Braintree/ApplePay', '~> 6.6.0'
-  s.ios.deployment_target = '13.0'
+  s.ios.deployment_target = '14.0'
   s.swift_version = '5.0'
 end
