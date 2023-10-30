@@ -1,1 +1,2 @@
+include ':braintree_android:PayPalNativeCheckout'
 rootProject.name = 'flutter_braintree'

@@ -4,7 +4,6 @@ version '1.0'
 buildscript {
     repositories {
         google()
-        mavenCentral()
         jcenter()
     }
 
@@ -54,9 +53,11 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.braintreepayments.api:paypal:4.38.0'
-    implementation 'com.braintreepayments.api:paypal-native-checkout:4.38.0'
+    //implementation 'com.braintreepayments.api:paypal-native-checkout:4.38.0'
     implementation 'com.braintreepayments.api:three-d-secure:4.38.0'
     implementation 'com.braintreepayments.api:venmo:4.38.0'
+    implementation files('library/PayPalNativeCheckout.aar')
+    implementation files('library/BraintreeCore.aar')
 
     components.all {
         allVariants {
