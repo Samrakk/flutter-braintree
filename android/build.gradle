@@ -56,8 +56,8 @@ dependencies {
     //implementation 'com.braintreepayments.api:paypal-native-checkout:4.38.0'
     implementation 'com.braintreepayments.api:three-d-secure:4.38.0'
     implementation 'com.braintreepayments.api:venmo:4.38.0'
-    implementation files('library/PayPalNativeCheckout.aar')
-    implementation files('library/BraintreeCore.aar')
+    //implementation files('library/PayPalNativeCheckout.aar')
+    //implementation files('library/BraintreeCore.aar')
 
     components.all {
         allVariants {
