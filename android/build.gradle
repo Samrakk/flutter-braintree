@@ -48,16 +48,23 @@ android {
 }
 
 dependencies {
-    implementation 'com.braintreepayments.api:drop-in:6.13.0'
+    //implementation 'com.braintreepayments.api:drop-in:6.13.0'
     implementation 'com.google.android.gms:play-services-wallet:19.2.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.braintreepayments.api:paypal:4.38.0'
+    //implementation 'com.braintreepayments.api:paypal:4.38.0'
     //implementation 'com.braintreepayments.api:paypal-native-checkout:4.38.0'
-    implementation 'com.braintreepayments.api:three-d-secure:4.38.0'
-    implementation 'com.braintreepayments.api:venmo:4.38.0'
-    //implementation files('library/PayPalNativeCheckout.aar')
-    //implementation files('library/BraintreeCore.aar')
+    //implementation 'com.braintreepayments.api:three-d-secure:4.38.0'
+    //implementation 'com.braintreepayments.api:venmo:4.38.0'
+    implementation files('library/BraintreeCore.aar')
+    implementation files('library/PayPalNativeCheckout.aar')
+    implementation files('library/GooglePay.aar')
+    implementation files('library/PayPal.aar')
+    implementation files('library/PayPalDataCollector.aar')
+    implementation files('library/SharedUtils.aar')
+    implementation files('library/Card.aar')
+    implementation 'com.braintreepayments.api:browser-switch:2.6.0'
+    implementation 'com.paypal.checkout:android-sdk:1.1.0'
 
     components.all {
         allVariants {
