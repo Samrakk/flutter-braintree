@@ -17,6 +17,9 @@ rootProject.allprojects {
         google()
         jcenter()
         maven {
+            url "https://jitpack.io/#Samrakk/braintree_android/1.0.0"
+        }
+        maven {
             url "https://cardinalcommerceprod.jfrog.io/artifactory/android"
             credentials {
                 username 'braintree_team_sdk'
@@ -30,7 +33,6 @@ rootProject.allprojects {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'com.mobbeel.plugin'
 
 android {
     compileSdk 34
