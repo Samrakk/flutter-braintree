@@ -30,9 +30,6 @@ import com.braintreepayments.api.GooglePayRequest;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
 
-
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
 public class FlutterBraintreeCustom
@@ -40,7 +37,6 @@ public class FlutterBraintreeCustom
         implements GooglePayListener, PayPalNativeCheckoutListener, PayPalListener {
     private BraintreeClient braintreeClient;
     private PayPalClient payPalClient;
-
     private PayPalNativeCheckoutClient payPalNativeClient;
     private GooglePayClient googlePayClient;
 
