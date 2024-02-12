@@ -13,14 +13,14 @@ import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
 import com.braintreepayments.api.GooglePayListener;
 import com.braintreepayments.api.PayPalAccountNonce;
-import com.braintreepayments.api.PayPalClient;
+//import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalListener;
-import com.braintreepayments.api.PayPalNativeCheckoutAccountNonce;
-import com.braintreepayments.api.PayPalNativeCheckoutClient;
-import com.braintreepayments.api.PayPalNativeCheckoutListener;
-import com.braintreepayments.api.PayPalNativeCheckoutPaymentIntent;
-import com.braintreepayments.api.PayPalNativeCheckoutRequest;
-import com.braintreepayments.api.PayPalNativeCheckoutVaultRequest;
+//import com.braintreepayments.api.PayPalNativeCheckoutAccountNonce;
+//import com.braintreepayments.api.PayPalNativeCheckoutClient;
+//import com.braintreepayments.api.PayPalNativeCheckoutListener;
+//import com.braintreepayments.api.PayPalNativeCheckoutPaymentIntent;
+//import com.braintreepayments.api.PayPalNativeCheckoutRequest;
+//import com.braintreepayments.api.PayPalNativeCheckoutVaultRequest;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.PostalAddress;
 import com.braintreepayments.api.UserCanceledException;
@@ -34,10 +34,10 @@ import java.util.HashMap;
 
 public class FlutterBraintreeCustom
         extends AppCompatActivity
-        implements GooglePayListener, PayPalNativeCheckoutListener, PayPalListener {
+        implements GooglePayListener, PayPalListener {
     private BraintreeClient braintreeClient;
-    private PayPalClient payPalClient;
-    private PayPalNativeCheckoutClient payPalNativeClient;
+    //private PayPalClient payPalClient;
+    //private PayPalNativeCheckoutClient payPalNativeClient;
     private GooglePayClient googlePayClient;
 
     @Override
@@ -62,11 +62,11 @@ public class FlutterBraintreeCustom
             if (type.equals("tokenizeCreditCard")) {
                 tokenizeCreditCard();
             } else if (type.equals("requestPaypalNonce")) {
-                payPalClient = new PayPalClient(this, braintreeClient);
-                payPalClient.setListener(this);
-                payPalNativeClient = new PayPalNativeCheckoutClient(braintreeClient);
-                payPalNativeClient.setListener(this);
-                requestPaypalNonce();
+                //payPalClient = new PayPalClient(this, braintreeClient);
+               // payPalClient.setListener(this);
+               // payPalNativeClient = new PayPalNativeCheckoutClient(braintreeClient);
+               // payPalNativeClient.setListener(this);
+                //requestPaypalNonce();
             } else if (type.equals("requestGooglePayment")) {
                 googlePayClient = new GooglePayClient(this, braintreeClient);
                 googlePayClient.setListener(this);
@@ -107,19 +107,20 @@ public class FlutterBraintreeCustom
         });
     }
 
+    /*
     protected void requestPaypalNonce() {
         Intent intent = getIntent();
         if (intent.getStringExtra("amount") == null) {
             // Vault flow
-            PayPalNativeCheckoutVaultRequest request = new PayPalNativeCheckoutVaultRequest();
-            request.setDisplayName(intent.getStringExtra("displayName"));
-            request.setBillingAgreementDescription(intent.getStringExtra("billingAgreementDescription"));
-            request.setLocaleCode(intent.getStringExtra("localeCode"));
-            request.setShippingAddressRequired(intent.getBooleanExtra("shippingAddressRequired", false));
-            request.setShippingAddressEditable(intent.getBooleanExtra("shippingAddressEditable", false));
-            request.setReturnUrl(intent.getStringExtra("returnURL"));
-            request.setMerchantAccountId(intent.getStringExtra("merchantAccountId"));
-            payPalNativeClient.launchNativeCheckout(this, request);
+           // PayPalNativeCheckoutVaultRequest request = new PayPalNativeCheckoutVaultRequest();
+           // request.setDisplayName(intent.getStringExtra("displayName"));
+           // request.setBillingAgreementDescription(intent.getStringExtra("billingAgreementDescription"));
+           // request.setLocaleCode(intent.getStringExtra("localeCode"));
+           // request.setShippingAddressRequired(intent.getBooleanExtra("shippingAddressRequired", false));
+           // request.setShippingAddressEditable(intent.getBooleanExtra("shippingAddressEditable", false));
+           // request.setReturnUrl(intent.getStringExtra("returnURL"));
+           // request.setMerchantAccountId(intent.getStringExtra("merchantAccountId"));
+           // payPalNativeClient.launchNativeCheckout(this, request);
 
         } else {
             PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest(intent.getStringExtra("amount"));
@@ -156,10 +157,11 @@ public class FlutterBraintreeCustom
             System.out.println("payPalPaymentIntent :" + request.getIntent());
             System.out.println("amount :" + request.getAmount());
             System.out.println("localcode :" + request.getLocaleCode());
-            payPalNativeClient.launchNativeCheckout(this, request);
+            //payPalNativeClient.launchNativeCheckout(this, request);
 
         }
     }
+     */
 
     public void requestGooglePayment() throws Exception {
         try {
@@ -188,6 +190,7 @@ public class FlutterBraintreeCustom
         HashMap<String, Object> nonceMap = new HashMap<String, Object>();
         nonceMap.put("nonce", paymentMethodNonce.getString());
         nonceMap.put("isDefault", paymentMethodNonce.isDefault());
+        /*
         if (paymentMethodNonce instanceof PayPalNativeCheckoutAccountNonce) {
             PayPalNativeCheckoutAccountNonce paypalAccountNonce = (PayPalNativeCheckoutAccountNonce) paymentMethodNonce;
             nonceMap.put("paypalPayerId", paypalAccountNonce.getPayerId());
@@ -195,7 +198,9 @@ public class FlutterBraintreeCustom
             nonceMap.put("description", paypalAccountNonce.getEmail());
             nonceMap.put("email", paypalAccountNonce.getEmail());
             nonceMap.put("billingAddress", getBillingAddress(paypalAccountNonce.getBillingAddress()));
-        } else if (paymentMethodNonce instanceof CardNonce) {
+        } else
+         */
+        if (paymentMethodNonce instanceof CardNonce) {
             CardNonce cardNonce = (CardNonce) paymentMethodNonce;
             nonceMap.put("typeLabel", cardNonce.getCardType());
             nonceMap.put("description", "ending in ••" + cardNonce.getLastTwo());
@@ -273,11 +278,14 @@ public class FlutterBraintreeCustom
     }
 
 
+    /*
     @Override
     public void onPayPalSuccess(@NonNull PayPalNativeCheckoutAccountNonce paymentMethodNonce) {
         System.out.println("native_param_payPalAccountNonce :" + paymentMethodNonce.getFirstName());
         onPaymentMethodNonceCreated(paymentMethodNonce);
     }
+
+     */
 
     @Override
     public void onPayPalSuccess(@NonNull PayPalAccountNonce payPalAccountNonce) {
