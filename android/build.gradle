@@ -51,14 +51,25 @@ dependencies {
     implementation 'com.braintreepayments.api:drop-in:6.14.0'
     // to collect device data
     implementation 'com.braintreepayments.api:data-collector:4.41.0'
-
+    // to offer PayPal
+    implementation 'com.braintreepayments.api:paypal:4.41.0'
+    // to offer Venmo
+    implementation 'com.braintreepayments.api:venmo:4.41.0'
+    // to offer Union Pay
+    implementation 'com.braintreepayments.api:union-pay:4.41.0'
+    // to offer Google Pay
+    implementation 'com.braintreepayments.api:google-pay:4.41.0'
+    // to perform 3DS verification
+    implementation 'com.braintreepayments.api:three-d-secure:4.41.0'
+    // to offer Venmo
+    implementation 'com.braintreepayments.api:venmo:4.41.0'
+    // Wallet
     implementation 'com.google.android.gms:play-services-wallet:19.2.1'
+
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     //implementation 'com.braintreepayments.api:paypal:4.41.0'
     //implementation 'com.braintreepayments.api:paypal-native-checkout:4.41.0'
-    implementation 'com.braintreepayments.api:three-d-secure:4.41.0'
-    implementation 'com.braintreepayments.api:venmo:4.41.0'
     //implementation files('library/PayPalNativeCheckout.aar')
     //implementation files('library/BraintreeCore.aar')
 
