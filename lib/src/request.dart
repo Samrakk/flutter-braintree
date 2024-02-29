@@ -105,7 +105,7 @@ class BraintreeBillingAddress {
   final String? givenName;
   final String? surname;
   final String? recipientName;
-  final String? phoneNumber;
+  String? phoneNumber;
   final String? streetAddress;
   final String? extendedAddress;
   final String? locality;
