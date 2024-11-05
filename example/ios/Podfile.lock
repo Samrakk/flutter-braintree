@@ -1,23 +1,23 @@
 PODS:
-  - Braintree/ApplePay (6.6.0):
+  - Braintree/ApplePay (6.24.0):
     - Braintree/Core
-  - Braintree/Core (6.6.0)
-  - Braintree/DataCollector (6.6.0):
+  - Braintree/Core (6.24.0)
+  - Braintree/DataCollector (6.24.0):
     - Braintree/Core
-  - Braintree/PayPal (6.6.0):
+  - Braintree/PayPal (6.24.0):
     - Braintree/Core
     - Braintree/DataCollector
-  - Braintree/PayPalNativeCheckout (6.6.0):
+  - Braintree/PayPalNativeCheckout (6.24.0):
     - Braintree/Core
     - Braintree/PayPal
-    - PayPalCheckout (= 1.1.0)
+    - PayPalCheckout (= 1.3.0)
   - Flutter (1.0.0)
   - flutter_braintree (2.0.0):
-    - Braintree/ApplePay (~> 6.6.0)
-    - Braintree/PayPal (~> 6.6.0)
-    - Braintree/PayPalNativeCheckout (~> 6.6.0)
+    - Braintree/ApplePay (~> 6.24.0)
+    - Braintree/PayPal (~> 6.24.0)
+    - Braintree/PayPalNativeCheckout (~> 6.24.0)
     - Flutter
-  - PayPalCheckout (1.1.0)
+  - PayPalCheckout (1.3.0)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -35,10 +35,10 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_braintree/ios"
 
 SPEC CHECKSUMS:
-  Braintree: 69b41260af473d8d9bad1d74576fd021954a750a
+  Braintree: a78fb45abc4f37d46436706b0421e94652a254ae
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_braintree: c1ef079f96740bf44ff062ef0e77b5d50f2ee32a
-  PayPalCheckout: ec442f9026c4ec6eee58f768b3cfd81c0ff569bf
+  flutter_braintree: 8c1c0116da9c48f00a15b58dc9c9fa21c2fbf7c2
+  PayPalCheckout: 06cb1e4f5bfdca33b8eb6052d04ac4e4a4ab512c
 
 PODFILE CHECKSUM: 7d6f6f687ae4a692b0eeac1dbcf5093d6fd43119
 
