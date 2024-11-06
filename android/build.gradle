@@ -45,27 +45,27 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    buildToolsVersion '30.0.3'
+    buildToolsVersion "34.0.0"
 }
 
 dependencies {
-    implementation 'com.braintreepayments.api:drop-in:6.14.0'
+    implementation 'com.braintreepayments.api:drop-in:6.16.0'
     // to collect device data
-    implementation 'com.braintreepayments.api:data-collector:4.41.0'
+    implementation 'com.braintreepayments.api:data-collector:4.49.1'
     // to offer PayPal
-    implementation 'com.braintreepayments.api:paypal:4.41.0'
+    implementation 'com.braintreepayments.api:paypal:4.49.1'
     // to offer Venmo
-    implementation 'com.braintreepayments.api:venmo:4.41.0'
+    implementation 'com.braintreepayments.api:venmo:4.49.1'
     // to offer Union Pay
-    implementation 'com.braintreepayments.api:union-pay:4.41.0'
+    //implementation 'com.braintreepayments.api:union-pay:5.2.0'
     // to offer Google Pay
-    implementation 'com.braintreepayments.api:google-pay:4.41.0'
+    implementation 'com.braintreepayments.api:google-pay:4.49.1'
     // to perform 3DS verification
-    implementation 'com.braintreepayments.api:three-d-secure:4.41.0'
+    implementation 'com.braintreepayments.api:three-d-secure:4.49.1'
     // to offer Venmo
-    implementation 'com.braintreepayments.api:venmo:4.41.0'
+    implementation 'com.braintreepayments.api:venmo:4.49.1'
     // Wallet
-    implementation 'com.google.android.gms:play-services-wallet:19.2.1'
+    implementation 'com.google.android.gms:play-services-wallet:19.4.0'
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'

@@ -63,9 +63,9 @@ public class FlutterBraintreeCustom
                 tokenizeCreditCard();
             } else if (type.equals("requestPaypalNonce")) {
                 //payPalClient = new PayPalClient(this, braintreeClient);
-               // payPalClient.setListener(this);
-               // payPalNativeClient = new PayPalNativeCheckoutClient(braintreeClient);
-               // payPalNativeClient.setListener(this);
+                // payPalClient.setListener(this);
+                // payPalNativeClient = new PayPalNativeCheckoutClient(braintreeClient);
+                // payPalNativeClient.setListener(this);
                 //requestPaypalNonce();
             } else if (type.equals("requestGooglePayment")) {
                 googlePayClient = new GooglePayClient(this, braintreeClient);
