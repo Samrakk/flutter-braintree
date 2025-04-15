@@ -8,11 +8,9 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 import android.app.Activity;
 import android.content.Intent;
-
 
 import androidx.annotation.Nullable;
 
@@ -34,28 +32,20 @@ import java.util.HashMap;
 
 public class FlutterBraintreeDropIn implements FlutterPlugin, ActivityAware, MethodCallHandler, ActivityResultListener, Serializable {
     private static final int DROP_IN_REQUEST_CODE = 0x1337;
-
     private Activity activity;
     private Result activeResult;
 
-
-    public static void registerWith(Registrar registrar) {
-        final MethodChannel channel = new MethodChannel(registrar.messenger(), "flutter_braintree.drop_in");
-        FlutterBraintreeDropIn plugin = new FlutterBraintreeDropIn();
-        plugin.activity = registrar.activity();
-        registrar.addActivityResultListener(plugin);
-        channel.setMethodCallHandler(plugin);
-    }
+    // Removed old static registerWith(Registrar) method since it uses the deprecated API.
 
     @Override
-    public void onAttachedToEngine(FlutterPluginBinding binding) {
+    public void onAttachedToEngine(FlutterPlugin.FlutterPluginBinding binding) {
         final MethodChannel channel = new MethodChannel(binding.getBinaryMessenger(), "flutter_braintree.drop_in");
         channel.setMethodCallHandler(this);
     }
 
     @Override
-    public void onDetachedFromEngine(FlutterPluginBinding binding) {
-
+    public void onDetachedFromEngine(FlutterPlugin.FlutterPluginBinding binding) {
+        // Clean-up can be done here if needed.
     }
 
     @Override
@@ -92,12 +82,12 @@ public class FlutterBraintreeDropIn implements FlutterPlugin, ActivityAware, Met
             else if (tokenizationKey != null)
                 token = tokenizationKey;
 
-            // For best results with 3ds 2.0, provide as many additional elements as possible.
+            // Setup 3D Secure Request
             HashMap<String, String> billingAddress = call.argument("billingAddress");
             if (billingAddress != null) {
                 ThreeDSecurePostalAddress address = new ThreeDSecurePostalAddress();
-                address.setGivenName(billingAddress.get("givenName")); // ASCII-printable characters required, else will throw a validation error
-                address.setSurname(billingAddress.get("surname")); // ASCII-printable characters required, else will throw a validation error
+                address.setGivenName(billingAddress.get("givenName"));
+                address.setSurname(billingAddress.get("surname"));
                 address.setPhoneNumber(billingAddress.get("phoneNumber"));
                 address.setStreetAddress(billingAddress.get("streetAddress"));
                 address.setExtendedAddress(billingAddress.get("extendedAddress"));
@@ -112,7 +102,6 @@ public class FlutterBraintreeDropIn implements FlutterPlugin, ActivityAware, Met
                 threeDSecureRequest.setAdditionalInformation(additionalInformation);
             }
 
-
             threeDSecureRequest.setAmount((String) call.argument("amount"));
             String email = call.argument("email");
             if (email != null) {
@@ -121,16 +110,10 @@ public class FlutterBraintreeDropIn implements FlutterPlugin, ActivityAware, Met
 
             threeDSecureRequest.setVersionRequested(ThreeDSecureRequest.VERSION_2);
 
-
             DropInRequest dropInRequest = new DropInRequest();
-
             dropInRequest.setVaultManagerEnabled((Boolean) call.argument("vaultManagerEnabled"));
             dropInRequest.setThreeDSecureRequest(threeDSecureRequest);
             dropInRequest.setMaskCardNumber((Boolean) call.argument("maskCardNumber"));
-
-
-            //.collectDeviceData((Boolean) call.argument("collectDeviceData"))
-            // .requestThreeDSecureVerification((Boolean) call.argument("requestThreeDSecureVerification"))
 
             readGooglePaymentParameters(dropInRequest, call);
             readPayPalParameters(dropInRequest, call);
@@ -170,7 +153,7 @@ public class FlutterBraintreeDropIn implements FlutterPlugin, ActivityAware, Met
         googlePayRequest.setAllowPrepaidCards(((Boolean) arg.get("allowPrepaidCards")));
         googlePayRequest.setPayPalEnabled(((Boolean) arg.get("paypalEnabled")));
         googlePayRequest.setBillingAddressRequired(((Boolean) arg.get("billingAddressRequired")));
-        googlePayRequest.setBillingAddressFormat((WalletConstants.BILLING_ADDRESS_FORMAT_FULL));
+        googlePayRequest.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
         googlePayRequest.setPhoneNumberRequired(((Boolean) arg.get("phoneNumberRequired")));
         googlePayRequest.setEmailRequired(((Boolean) arg.get("emailRequired")));
         googlePayRequest.setEnvironment(((String) arg.get("environment")));
@@ -179,7 +162,6 @@ public class FlutterBraintreeDropIn implements FlutterPlugin, ActivityAware, Met
     }
 
     private static void readPayPalParameters(DropInRequest dropInRequest, MethodCall call) {
-        System.out.println("DropInRequest_PayPal");
         HashMap<String, Object> arg = call.argument("paypalRequest");
         if (arg == null) {
             dropInRequest.setPayPalDisabled(true);
@@ -196,47 +178,42 @@ public class FlutterBraintreeDropIn implements FlutterPlugin, ActivityAware, Met
 
     @Override
     public boolean onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (this.activeResult == null)
-            return false;
+        if (this.activeResult == null) return false;
 
-        switch (requestCode) {
-            case DROP_IN_REQUEST_CODE:
-                if (resultCode == Activity.RESULT_OK) {
-                    DropInResult dropInResult = data.getParcelableExtra("dropInResult");
-                    PaymentMethodNonce paymentNonce = dropInResult.getPaymentMethodNonce();
+        if (requestCode == DROP_IN_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                DropInResult dropInResult = data.getParcelableExtra("dropInResult");
+                PaymentMethodNonce paymentNonce = dropInResult.getPaymentMethodNonce();
 
-                    HashMap<String, Object> nonceResult = new HashMap<String, Object>();
-                    nonceResult.put("nonce", dropInResult.getPaymentMethodNonce());
-                    nonceResult.put("typeLabel", dropInResult.getPaymentMethodType().name());
-                    nonceResult.put("description", dropInResult.getPaymentDescription());
-                    nonceResult.put("isDefault", paymentNonce.isDefault());
+                HashMap<String, Object> nonceResult = new HashMap<>();
+                nonceResult.put("nonce", dropInResult.getPaymentMethodNonce());
+                nonceResult.put("typeLabel", dropInResult.getPaymentMethodType().name());
+                nonceResult.put("description", dropInResult.getPaymentDescription());
+                nonceResult.put("isDefault", paymentNonce.isDefault());
 
-                    if (paymentNonce instanceof GooglePayCardNonce) {
-                        System.out.println("GooglePayCardNonce_payment");
-                        GooglePayCardNonce nonce = (GooglePayCardNonce) paymentNonce;
-                        nonceResult.put("billingAddress", nonce.getBillingAddress());
-                        nonceResult.put("email", nonce.getEmail());
-                    } else if (paymentNonce instanceof PayPalAccountNonce) {
-                        System.out.println("PayPalAccountNonce_payment");
-                        PayPalAccountNonce nonce = (PayPalAccountNonce) paymentNonce;
-                        nonceResult.put("billingAddress", nonce.getBillingAddress());
-                        nonceResult.put("email", nonce.getEmail());
-                    }
-
-                    HashMap<String, Object> result = new HashMap<String, Object>();
-                    result.put("paymentMethodNonce", nonceResult);
-                    result.put("deviceData", dropInResult.getDeviceData());
-                    this.activeResult.success(result);
-                } else if (resultCode == Activity.RESULT_CANCELED) {
-                    activeResult.success(null);
-                } else {
-                    String error = data.getStringExtra("error");
-                    activeResult.error("braintree_error", error, null);
+                if (paymentNonce instanceof GooglePayCardNonce) {
+                    GooglePayCardNonce nonce = (GooglePayCardNonce) paymentNonce;
+                    nonceResult.put("billingAddress", nonce.getBillingAddress());
+                    nonceResult.put("email", nonce.getEmail());
+                } else if (paymentNonce instanceof PayPalAccountNonce) {
+                    PayPalAccountNonce nonce = (PayPalAccountNonce) paymentNonce;
+                    nonceResult.put("billingAddress", nonce.getBillingAddress());
+                    nonceResult.put("email", nonce.getEmail());
                 }
-                activeResult = null;
-                return true;
-            default:
-                return false;
+
+                HashMap<String, Object> resultData = new HashMap<>();
+                resultData.put("paymentMethodNonce", nonceResult);
+                resultData.put("deviceData", dropInResult.getDeviceData());
+                this.activeResult.success(resultData);
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                activeResult.success(null);
+            } else {
+                String error = data.getStringExtra("error");
+                activeResult.error("braintree_error", error, null);
+            }
+            activeResult = null;
+            return true;
         }
+        return false;
     }
 }

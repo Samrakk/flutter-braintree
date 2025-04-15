@@ -1,10 +1,7 @@
 package com.example.flutter_braintree;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-
-
 
 import java.util.Map;
 
@@ -15,7 +12,6 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener;
 
 public class FlutterBraintreePlugin implements FlutterPlugin, ActivityAware, MethodCallHandler, ActivityResultListener {
@@ -26,17 +22,10 @@ public class FlutterBraintreePlugin implements FlutterPlugin, ActivityAware, Met
 
   private FlutterBraintreeDropIn dropIn;
 
-  public static void registerWith(Registrar registrar) {
-    FlutterBraintreeDropIn.registerWith(registrar);
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "flutter_braintree.custom");
-    FlutterBraintreePlugin plugin = new FlutterBraintreePlugin();
-    plugin.activity = registrar.activity();
-    registrar.addActivityResultListener(plugin);
-    channel.setMethodCallHandler(plugin);
-  }
+  // Removed the old registerWith(Registrar registrar) method
 
   @Override
-  public void onAttachedToEngine(FlutterPluginBinding binding) {
+  public void onAttachedToEngine(FlutterPlugin.FlutterPluginBinding binding) {
     final MethodChannel channel = new MethodChannel(binding.getBinaryMessenger(), "flutter_braintree.custom");
     channel.setMethodCallHandler(this);
 
@@ -45,8 +34,10 @@ public class FlutterBraintreePlugin implements FlutterPlugin, ActivityAware, Met
   }
 
   @Override
-  public void onDetachedFromEngine(FlutterPluginBinding binding) {
-    dropIn.onDetachedFromEngine(binding);
+  public void onDetachedFromEngine(FlutterPlugin.FlutterPluginBinding binding) {
+    if (dropIn != null) {
+      dropIn.onDetachedFromEngine(binding);
+    }
     dropIn = null;
   }
 
@@ -54,26 +45,34 @@ public class FlutterBraintreePlugin implements FlutterPlugin, ActivityAware, Met
   public void onAttachedToActivity(ActivityPluginBinding binding) {
     activity = binding.getActivity();
     binding.addActivityResultListener(this);
-    dropIn.onAttachedToActivity(binding);
+    if (dropIn != null) {
+      dropIn.onAttachedToActivity(binding);
+    }
   }
 
   @Override
   public void onDetachedFromActivityForConfigChanges() {
     activity = null;
-    dropIn.onDetachedFromActivity();
+    if (dropIn != null) {
+      dropIn.onDetachedFromActivity();
+    }
   }
 
   @Override
   public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
     activity = binding.getActivity();
     binding.addActivityResultListener(this);
-    dropIn.onReattachedToActivityForConfigChanges(binding);
+    if (dropIn != null) {
+      dropIn.onReattachedToActivityForConfigChanges(binding);
+    }
   }
 
   @Override
   public void onDetachedFromActivity() {
     activity = null;
-    dropIn.onDetachedFromActivity();
+    if (dropIn != null) {
+      dropIn.onDetachedFromActivity();
+    }
   }
 
   @Override
@@ -115,11 +114,10 @@ public class FlutterBraintreePlugin implements FlutterPlugin, ActivityAware, Met
       intent.putExtra("shippingAddressEditable", (boolean) request.get("shippingAddressEditable"));
       activity.startActivityForResult(intent, CUSTOM_ACTIVITY_REQUEST_CODE);
     } else if (call.method.equals("requestGooglePayment")) {
-      String authorization = call.argument("authorization");
       Intent intent = new Intent(activity, FlutterBraintreeCustom.class);
       intent.putExtra("type", "requestGooglePayment");
       intent.putExtra("authorization", (String) call.argument("authorization"));
-      assert (call.argument("request") instanceof Map);
+      assert(call.argument("request") instanceof Map);
       Map request = (Map) call.argument("request");
       intent.putExtra("totalPrice", (String) request.get("totalPrice"));
       intent.putExtra("currencyCode", (String) request.get("currencyCode"));
@@ -141,27 +139,25 @@ public class FlutterBraintreePlugin implements FlutterPlugin, ActivityAware, Met
   public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
     if (activeResult == null)
       return false;
-    
-    switch (requestCode) {
-      case CUSTOM_ACTIVITY_REQUEST_CODE:
-        if (resultCode == Activity.RESULT_OK) {
-          String type = data.getStringExtra("type");
-          if (type.equals("paymentMethodNonce")) {
-            activeResult.success(data.getSerializableExtra("paymentMethodNonce"));
-          } else {
-            Exception error = new Exception("Invalid activity result type.");
-            activeResult.error("error", error.getMessage(), null);
-          }
-        } else if (resultCode == Activity.RESULT_CANCELED) {
-          activeResult.success(null);
-        }  else {
-          Exception error = (Exception) data.getSerializableExtra("error");
+
+    if (requestCode == CUSTOM_ACTIVITY_REQUEST_CODE) {
+      if (resultCode == Activity.RESULT_OK) {
+        String type = data.getStringExtra("type");
+        if (type.equals("paymentMethodNonce")) {
+          activeResult.success(data.getSerializableExtra("paymentMethodNonce"));
+        } else {
+          Exception error = new Exception("Invalid activity result type.");
           activeResult.error("error", error.getMessage(), null);
         }
-        activeResult = null;
-        return true;
-      default:
-        return false;
+      } else if (resultCode == Activity.RESULT_CANCELED) {
+        activeResult.success(null);
+      }  else {
+        Exception error = (Exception) data.getSerializableExtra("error");
+        activeResult.error("error", error.getMessage(), null);
+      }
+      activeResult = null;
+      return true;
     }
+    return false;
   }
 }
